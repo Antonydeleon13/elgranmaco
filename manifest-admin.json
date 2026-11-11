@@ -1,0 +1,8 @@
+{
+  "short_name": "Admin",
+  "name": "El Gran Maco Admin Panel",
+  "start_url": "adminpradera.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#d4af37"
+}

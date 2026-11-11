@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="manifest-admin.json">
+    <link rel="apple-touch-icon" href="icono.png">
+    <link rel="icon" type="image/png" href="icono.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+   <title>EGM Admin | Andaria Management</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/locales/es.global.min.js"></script>
+    
+    <style>
+        /* ==========================================
+           VARIABLES DE DISEÑO (PALETA ÉLITE)
+           ========================================== */
+        :root { 
+            --bg: #000; 
+            --card: #0a0a0a; 
+            --gold: #d4af37; 
+            --gold-dark: #aa8c2c; 
+            --border: #1a1a1a; 
+            --green: #2ecc71; 
+            --red: #ff4d4d; 
+            --glass: rgba(10, 10, 10, 0.98); 
+        }
+
+        .block-item-admin { 
+    display: flex; justify-content: space-between; align-items: center; 
+    background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; 
+    margin-bottom: 8px; font-size: 0.8rem; border-left: 3px solid var(--red); 
+}
+        
+        /* ==========================================
+           ESTILOS BASE Y SCROLLBAR
+           ========================================== */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg); 
+            color: #fff; 
+            margin: 0; 
+            padding: 15px; 
+            overflow-x: hidden; 
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+
+        /* ==========================================
+           LOGIN OVERLAY
+           ========================================== */
+        #login-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #000; 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        .login-box { 
+            width: 320px; 
+            padding: 45px; 
+            text-align: center; 
+            background: var(--card); 
+            border-radius: 35px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 0 40px rgba(212,175,55,0.05); 
+        }
+
+        /* ==========================================
+           ESTRUCTURA DASHBOARD
+           ========================================== */
+        #admin-content { 
+            display: none; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
+        .main-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 340px; 
+            gap: 25px; 
+            margin-top: 10px; 
+        }
+
+        @media (max-width: 1100px) { 
+            .main-grid { 
+                grid-template-columns: 1fr; 
+            } 
+        }
+
+        /* ==========================================
+           CALENDARIO (MODERN DARK)
+           ========================================== */
+     #calendar-container {
+    background: var(--card);
+    padding: 15px;
+    border-radius: 35px;
+    border: 1px solid var(--border);
+    /* ASEGÚRATE DE QUE ESTÉ ASÍ */
+    height: auto; 
+}
+
+        .fc { 
+            --fc-border-color: #161616; 
+            --fc-today-bg-color: rgba(212,175,55,0.02); 
+            font-size: 0.85rem; 
+        }
+
+        .fc .fc-toolbar-title { 
+            font-size: 1.1rem !important; 
+            text-transform: uppercase; 
+            color: var(--gold); 
+            font-weight: 600; 
+            letter-spacing: 1px;
+        }
+
+        .fc-event-main { 
+            font-weight: 600; 
+            font-size: 0.75rem !important; 
+            line-height: 1.2; 
+            display: flex; 
+            align-items: center; 
+            padding: 3px 6px; 
+            cursor: pointer; 
+        }
+
+        .fc .fc-button-primary {
+            background-color: #111 !important;
+            border-color: #222 !important;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .fc .fc-button-primary:hover {
+            background-color: var(--gold) !important;
+            color: #000 !important;
+        }
+
+        /* ==========================================
+           SIDEBAR STATS
+           ========================================== */
+        .sidebar-stats { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 35px; 
+            padding: 30px; 
+            border-top: 5px solid var(--gold); 
+            position: sticky; 
+            top: 15px; 
+            height: fit-content; 
+        }
+
+        .sidebar-logo { 
+            width: 100px; 
+            margin-bottom: 20px; 
+            filter: drop-shadow(0 0 15px rgba(212,175,55,0.2)); 
+        }
+
+        .stat-group {
+            margin-bottom: 25px;
+        }
+
+        .stat-val { 
+            font-size: 2.3rem; 
+            font-weight: 600; 
+            color: var(--gold); 
+            line-height: 1;
+        }
+
+        .stat-label { 
+            font-size: 0.65rem; 
+            text-transform: uppercase; 
+            color: #666; 
+            letter-spacing: 2px; 
+            font-weight: 600;
+        }
+
+        #desglose-servicios { 
+            margin-top: 15px; 
+            border-top: 1px solid #1a1a1a; 
+            padding-top: 10px; 
+        }
+
+        .serv-stat-item { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.65rem; 
+            color: #888; 
+            margin-top: 6px; 
+            text-transform: uppercase; 
+        }
+
+        /* ==========================================
+           TARJETAS DE CITAS PENDIENTES
+           ========================================== */
+        .citas-list { 
+            margin-top: 40px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 15px; 
+            padding-bottom: 120px; 
+        }
+
+        .card { 
+            background: #060606; 
+            border: 1px solid var(--border); 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            border-left: 4px solid var(--gold); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #333;
+        }
+
+        /* ==========================================
+           SISTEMA DE MODALES (VENTANAS ELEGANTES)
+           ========================================== */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.95); 
+            backdrop-filter: blur(15px); 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10000; 
+        }
+
+        .modal-content { 
+            background: var(--glass); 
+            padding: 40px; 
+            border: 1px solid var(--gold); 
+            width: 90%; 
+            max-width: 400px; 
+            border-radius: 40px; 
+            text-align: center; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8); 
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================
+           ELEMENTOS DE FORMULARIO
+           ========================================== */
+        input, select, textarea { 
+            background: rgba(255,255,255,0.03); 
+            color: #fff; 
+            border: 1px solid #1a1a1a; 
+            padding: 14px; 
+            border-radius: 18px; 
+            width: 100%; 
+            margin-bottom: 12px; 
+            outline: none; 
+            font-family: 'Poppins'; 
+            box-sizing: border-box; 
+            font-size: 0.85rem; 
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* ==========================================
+           BOTONES PERSONALIZADOS
+           ========================================== */
+        .btn { 
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 20px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border: none; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        .btn-gold { 
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
+            color: #000; 
+        }
+
+        .btn-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(212,175,55,0.2);
+        }
+
+        .btn-outline { 
+            background: transparent; 
+            border: 1px solid #333; 
+            color: #777; 
+            margin-top: 12px; 
+        }
+
+        .btn-red { 
+            background: rgba(255, 77, 77, 0.1); 
+            border: 1px solid var(--red); 
+            color: var(--red); 
+        }
+
+        .btn-mini { 
+            width: auto; 
+            padding: 6px 14px; 
+            border-radius: 10px; 
+            font-size: 0.6rem; 
+            font-weight: 700; 
+            background: var(--green); 
+            color: #000; 
+            border: none; 
+            cursor: pointer; 
+        }
+
+        .btn-config-float { 
+            position: fixed; 
+            bottom: 35px; 
+            right: 35px; 
+            background: var(--gold); 
+            color: #000; 
+            width: 70px; 
+            height: 70px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.8rem; 
+            z-index: 5000; 
+            border: none; 
+            cursor: pointer; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        /* ==========================================
+           NOTIFICACIONES (TOAST)
+           ========================================== */
+        #toast { 
+            position: fixed; 
+            bottom: -100px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--gold); 
+            color: #000; 
+            padding: 16px 45px; 
+            border-radius: 50px; 
+            font-weight: 700; 
+            z-index: 11000; 
+            transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            font-size: 0.85rem; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        #toast.show { 
+            bottom: 40px; 
+        }
+       /* --- LIMPIEZA DEL POPUP (SOLO QUITAR AMARILLO) --- */
+.fc-popover {
+    background-color: #0a0a0a !important;
+    border: 1px solid var(--gold) !important;
+    z-index: 9999 !important;
+}
+
+.fc-popover-header {
+    background-color: #1a1a1a !important;
+    color: var(--gold) !important;
+}
+
+.fc-popover-body {
+    background-color: #0a0a0a !important;
+}
+
+/* LA CLAVE: Aquí quitamos el amarillo y ponemos texto blanco */
+.fc-popover-body .fc-daygrid-event {
+    background-color: transparent !important; /* Cero amarillo */
+    border: none !important;
+    color: #ffffff !important; /* Texto blanco puro */
+}
+
+/* El punto dorado para que no se vea vacío */
+.fc-popover-body .fc-daygrid-event::before {
+    content: "• ";
+    color: var(--gold);
+    font-weight: bold;
+}
+
+.fc-popover-close {
+    color: #fff !important;
+}
+        /* --- PEGAR AQUÍ (Al final del primer bloque <style>) --- */
+#toast-aviso {
+    position: fixed;
+    bottom: -100px; /* Fuera de la pantalla */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 20, 20, 0.95);
+    color: #d4af37;
+    padding: 14px 28px;
+    border-radius: 50px;
+    z-index: 1000000;
+    font-family: 'Poppins', sans-serif;
+    border: 1px solid #d4af37;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* El efecto de arrastre */
+    opacity: 0;
+}
+
+#toast-aviso.show {
+    bottom: 40px; /* Sube elegantemente */
+    opacity: 1;
+}
+
+
+/* Fuerza el estilo de punto para el lunch en la vista de mes */
+.fc-daygrid-event.lunch-event {
+    display: list-item !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* El punto rojo específico para el lunch */
+.fc-daygrid-event.lunch-event .fc-daygrid-event-dot {
+    border-color: #ff4d4d !important;
+}
+
+
+    </style>
+</head>
+<body>
+
+    <div id="toast">ACCIÓN EXITOSA</div>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <img src="logo.png" style="width: 90px; margin-bottom: 25px;">
+            <h2 style="font-size: 1rem; color: var(--gold); margin-bottom: 30px; letter-spacing: 2px;">ADMIN PANEL</h2>
+            <button class="btn btn-gold" onclick="loginGoogle(); activarNotificaciones()">
+    <i class="fab fa-google" style="margin-right: 10px;"></i> ENTRAR AL SISTEMA
+</button>
+        </div>
+    </div>
+
+    <div id="admin-content">
+        
+        <button class="btn-config-float" onclick="toggleConfig(); activarNotificaciones()">
+    <i class="fas fa-sliders-h"></i>
+</button>
+
+        <div class="main-grid">
+            
+            <div id="calendar-container">
+                <div id="calendar"></div>
+            </div>
+
+            <aside class="sidebar-stats">
+    <header style="text-align: center; margin-bottom:40px;">
+        <!-- Se añade el enlace a apps.html rodeando la imagen -->
+        <a href="apps.html" style="display: inline-block;">
+            <img src="logo.png" class="sidebar-logo" style="cursor: pointer;">
+        </a>
+    </header>
+
+                <div class="stat-group">
+                    <span class="stat-label">Citas Finalizadas del Mes</span><br>
+                    <span class="stat-val" id="citas-count">0</span>
+                    <div id="desglose-servicios"></div>
+                </div>
+
+                <div class="stat-group" style="background: rgba(212, 175, 55, 0.05); padding: 20px; border-radius: 25px; border: 1px solid rgba(212,175,55,0.1);">
+                    <span class="stat-label" id="label-pendientes">Pendientes Hoy</span><br>
+                    <span class="stat-val" id="count-pendientes" style="font-size: 1.8rem;">0</span>
+                </div>
+
+              <div class="stat-group" style="background: rgba(212, 175, 55, 0.05); padding: 20px; border-radius: 25px; border: 1px solid rgba(212,175,55,0.1); text-align: center;">
+    <span class="stat-label" style="color: var(--gold); letter-spacing: 3px;">Sucursal</span><br>
+    <span class="stat-val" style="font-size: 1.5rem; color: #fff; text-transform: uppercase; letter-spacing: 1px;">Admin Andaria</span>
+</div>
+            </aside>
+        </div>
+
+        <div id="detalle-agenda-dia" style="margin-top: 30px; display: none;">
+    <h3 id="titulo-agenda" style="color: var(--gold); text-align: center; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;"></h3>
+    <div class="citas-list" id="lista-citas"></div>
+</div>
+
+        <div id="modalAddCita" class="modal">
+    <div class="modal-content">
+        <h3 style="color:var(--gold);">AGENDAR CITA</h3>
+        <p id="add-fecha-display" style="font-size: 0.8rem; color: #666; margin-bottom: 20px;"></p>
+        
+        <input type="text" id="add-nombre" list="listaClientes" placeholder="Nombre completo del cliente">
+        <datalist id="listaClientes"></datalist>
+        <label style="display:block; text-align:left; font-size:0.6rem; color:#666; margin-left:10px; margin-top:10px; text-transform:uppercase; letter-spacing:1px;">WhatsApp</label>
+<div style="display: flex; gap: 8px; margin-bottom: 12px;">
+    <select id="add-codigo-area" style="width: 110px; margin-bottom:0; background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; color: white;">
+        <option value="502">🇬🇹 +502</option>
+        <option value="503">🇸🇻 +503</option>
+        <option value="504">🇭🇳 +504</option>
+        <option value="505">🇳🇮 +505</option>
+        <option value="506">🇨🇷 +506</option>
+        <option value="507">🇵🇦 +507</option>
+        <option value="52">🇲🇽 +52</option>
+        <option value="1">🇺🇸 +1</option>
+    </select>
+    <input type="tel" id="add-whatsapp" placeholder="Número" style="margin-bottom:0; flex:1;">
+</div>
+        <select id="add-servicio-select"></select>
+        <textarea id="add-nota" placeholder="¿Alguna nota o instrucción especial?" rows="3"></textarea>
+        
+        <button class="btn btn-gold" id="btn-save-cita-calendar">CONFIRMAR CITA</button>
+        <button class="btn btn-outline" onclick="cerrarModalAdd()">CANCELAR</button>
+    </div>
+</div>
+        
+        <div id="modalEvento" class="modal">
+            <div class="modal-content">
+                
+                <div id="view-mode">
+                    <h3 id="pop-nombre" style="color:var(--gold);">Detalle Cliente</h3>
+                    <p id="pop-fecha" style="font-size:0.85rem; color:#666;"></p>
+                    
+                    <div id="pop-detalle-corte" style="margin: 20px 0;"></div>
+                    
+                    <div id="pop-whatsapp" style="font-size:0.9rem; color:var(--green); font-weight:600; cursor:pointer; background:rgba(46, 204, 113, 0.08); padding:20px; border-radius:25px; margin-bottom:25px; border: 1px solid rgba(46, 204, 113, 0.2);">
+                        <i class="fab fa-whatsapp" style="font-size: 1.2rem; vertical-align: middle; margin-right: 8px;"></i> ENVIAR RECORDATORIO
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <button class="btn btn-gold" onclick="entrarModoEdicion()" style="padding:14px; font-size: 0.65rem;">EDITAR</button>
+                       <button class="btn btn-red" id="btn-eliminar-pop" onclick="eliminarCita()" style="padding:14px; font-size: 0.65rem;">ELIMINAR</button>
+                    </div>
+                    <button class="btn btn-outline" onclick="cerrarPop()">CERRAR VENTANA</button>
+                </div>
+
+                <div id="edit-mode" style="display:none;">
+                    <h3 style="color:var(--gold);">EDITAR SERVICIO</h3>
+                    
+                    <label style="display:block; text-align:left; font-size:0.6rem; color:#555; margin-left:10px;">NOMBRE</label>
+                    <input type="text" id="edit-nombre">
+                    
+                    <label style="display:block; text-align:left; font-size:0.6rem; color:#555; margin-left:10px;">WHATSAPP</label>
+<div style="display: flex; gap: 8px; margin-bottom: 12px;">
+    <select id="edit-codigo-area" style="width: 130px; margin-bottom:0;">
+        <option value="502">🇬🇹 GT +502</option>
+        <option value="503">🇸🇻 SV +503</option>
+        <option value="504">🇭🇳 HN +504</option>
+        <option value="505">🇳🇮 NI +505</option>
+        <option value="506">🇨🇷 CR +506</option>
+        <option value="507">🇵🇦 PA +507</option>
+        <option value="52">🇲🇽 MX +52</option>
+        <option value="1">🇺🇸 US +1</option>
+    </select>
+    <input type="tel" id="edit-whatsapp" placeholder="Número" style="margin-bottom:0;">
+</div>
+                    
+                    <label style="display:block; text-align:left; font-size:0.6rem; color:#555; margin-left:10px;">CAMBIAR SERVICIO</label>
+                    <select id="edit-servicio-select"></select>
+                    
+                    <label style="display:block; text-align:left; font-size:0.6rem; color:#555; margin-left:10px;">PRECIO FINAL (Q)</label>
+                    <input type="number" id="edit-precio">
+                    
+                    <label style="display:block; text-align:left; font-size:0.6rem; color:#555; margin-left:10px;">NOTA INTERNA</label>
+                    <textarea id="edit-nota" rows="2"></textarea>
+                    
+                    <button class="btn btn-gold" id="btn-update-cita">GUARDAR CAMBIOS</button>
+                    <button class="btn btn-outline" onclick="salirModoEdicion()">CANCELAR</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalConfig" class="modal">
+    <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;">
+        <h3 style="color:var(--gold);">PANEL DE CONTROL</h3>
+        
+       <p style="font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px;">GESTIÓN POR DÍA</p>
+<select id="config-dia-semana" onchange="cargarConfigDia(this.value)" style="border: 1px solid var(--gold); background: rgba(212,175,55,0.1);">
+    <option value="lunes">LUNES</option>
+    <option value="martes">MARTES</option>
+    <option value="miercoles">MIÉRCOLES</option>
+    <option value="jueves">JUEVES</option>
+    <option value="viernes">VIERNES</option>
+    <option value="sabado">SÁBADO</option>
+    <option value="domingo">DOMINGO</option>
+</select>
+
+<div style="display:flex; gap:12px; margin-bottom:15px;">
+    <div style="flex:1">
+        <span style="font-size: 0.6rem; color: #444;">APERTURA</span>
+        <select id="config-apertura"></select>
+    </div>
+    <div style="flex:1">
+        <span style="font-size: 0.6rem; color: #444;">CIERRE</span>
+        <select id="config-cierre"></select>
+    </div>
+</div>
+
+<p style="font-size: 0.7rem; color: #555; margin-top: 15px; text-align: left;">HORARIO DE ALMUERZO (LUNCH)</p>
+<div style="display:flex; gap:10px; margin-bottom:15px;">
+    <select id="config-lunch-inicio"><option value="">Sin lunch</option></select>
+    <select id="config-lunch-fin"><option value="">Sin lunch</option></select>
+</div>
+
+        <button class="btn btn-gold" id="btn-save-hours">ACTUALIZAR HORARIOS</button>
+<h4 style="font-size:0.7rem; color:var(--gold); border-bottom:1px solid #222; text-align:left; margin-top:25px; margin-bottom:10px;">BLOQUEAR DÍA ENTERO</h4>
+<div style="display:flex; gap:10px;">
+    <input type="text" id="input-block-date" placeholder="Elegir fecha" readonly style="cursor:pointer; text-align: center; margin-bottom:0;">
+    <button class="btn btn-red" id="btn-add-block" style="padding:12px; width:auto; margin-bottom:12px;">BLOQUEAR</button>
+</div>
+<div id="lista-bloqueos-admin" style="margin-top:15px; text-align: left; max-height: 120px; overflow-y:auto;"></div>
+                <hr style="border:0; border-top:1px solid #1a1a1a; margin:30px 0;">
+
+                <p style="font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px;">GESTIÓN DE SERVICIOS</p>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+    <input type="text" id="serv-n" placeholder="Nombre del Servicio" style="margin-bottom:0;">
+    <input type="number" id="serv-p" placeholder="Precio Q." style="margin-bottom:0;">
+</div>
+    <input type="text" id="serv-d" placeholder="¿Qué incluye?" style="margin-bottom:10px;">
+    <button class="btn btn-gold" id="btn-add-serv" style="padding: 12px; font-size: 0.6rem;">AGREGAR SERVICIO</button>
+    <div id="lista-servicios-admin" style="margin-top:25px; text-align: left;"></div>
+    <button class="btn btn-outline" onclick="toggleConfig()" style="margin-top: 30px;">CERRAR PANEL</button>
+            </div>
+        </div>
+
+        <div id="modalConfirm" class="modal">
+            <div class="modal-content" style="max-width: 340px;">
+                <div style="color: var(--red); font-size: 3rem; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p id="confirm-text" style="font-size: 0.95rem; margin-bottom: 30px; line-height: 1.5; color: #ccc;"></p>
+                <div style="display:flex; gap:15px;">
+                    <button class="btn btn-red" id="confirm-yes" style="padding: 14px; font-size: 0.65rem;">SÍ, PROCEDER</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('modalConfirm').style.display='none'" style="padding: 14px; font-size: 0.65rem; margin: 0;">CANCELAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    
+    // Aquí agregamos signInWithRedirect y getRedirectResult
+    import { 
+        getAuth, 
+        signInWithPopup, 
+        signInWithRedirect, 
+        getRedirectResult, 
+        GoogleAuthProvider, 
+        onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import { getDatabase, ref, set, onValue, push, remove, update, get, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+     // 1. CONFIGURACIÓN DE FIREBASE (EL GRAN MAESTRE)
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBRhYDMfZYqFTa0I-oIvf7ObSObKOgEJlo", 
+            authDomain: "elgranmaco-46fa2.firebaseapp.com", 
+            projectId: "elgranmaco-46fa2", 
+            databaseURL: "https://elgranmaco-46fa2-default-rtdb.firebaseio.com",
+            storageBucket: "elgranmaco-46fa2.firebasestorage.app",
+            messagingSenderId: "409031916784",
+            appId: "1:409031916784:web:60f51c79ec56f01098d635"
+        };
+
+        // 2. INICIALIZACIÓN (ORDEN CORRECTO)
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const fs = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+      
+      // --- VARIABLES GLOBALES (AGREGA ESTO AQUÍ) ---
+        let calendar;
+        let selectedDateTime;
+        let currentEditingId;
+        let catalogoGlobal = {};
+        let fechaVisualizada = new Date().toISOString().split('T')[0];
+        let iti;
+        let fechaBloqueoParaBorrar = null;
+
+
+
+
+
+
+// --- MONITOR DE NOTIFICACIONES (LÍNEA 706) ---
+const citasRef = ref(db, 'sucursales/andaria/citas');
+let inicializado = false;
+
+// Evita que suenen las 196 citas viejas al cargar
+get(citasRef).then(() => { 
+    inicializado = true; 
+    console.log("Vigilante de citas listo.");
+});
+
+// Detecta cada cliente nuevo en tiempo real
+onChildAdded(citasRef, (snapshot) => {
+    if (!inicializado) return; 
+
+    const nuevaCita = snapshot.val();
+    const hora = nuevaCita.fecha ? nuevaCita.fecha.split('T')[1] : "";
+
+    // 1. Sonido (Link directo funcional)
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+    audio.play().catch(e => console.log("Clickea el panel para activar audio"));
+
+    // 2. Notificación Nativa
+    if (Notification.permission === "granted") {
+        new Notification("⭐ NUEVA CITA RECIBIDA", {
+            body: `${nuevaCita.nombre} - ${nuevaCita.servicio} (${hora})`,
+            icon: "logo.png"
+        });
+    }
+
+    // 3. Aviso Visual Dorado
+    if (typeof window.showToast === 'function') {
+        window.showToast(`¡ALERTA: ${nuevaCita.nombre.toUpperCase()} AGENDÓ!`);
+    }
+});
+
+
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('firebase-messaging-sw.js')
+        .then((registration) => {
+            console.log("Service Worker de Firebase registrado con éxito");
+            // Pasamos el registro al sistema de mensajería usando la función correcta de la v10
+            return getToken(messaging, { 
+    vapidKey: 'BEqh993KP_6sknz2_ibfDfrqrzYPM7-JqkGba6hwD-IFIHJUfBV8dAL86eIWKkSPo3mkQIsCOkq9t5ja5NKynOs', 
+    serviceWorkerRegistration: registration 
+});
+        })
+        .then((token) => {
+            if (token) {
+                console.log("Token FCM obtenido con éxito:", token);
+                // Opcional: Aquí puedes guardarlo en tu Realtime Database si lo necesitas
+            }
+        })
+        .catch((err) => {
+            console.error("Error al registrar el Service Worker o el token:", err);
+        });
+}
+
+// 2. Función global para el botón
+window.activarNotificaciones = async () => {
+    // 1. Verificamos si ya tenemos permiso para no molestar al sistema
+    if ("Notification" in window && Notification.permission === 'granted') {
+        console.log("Notificaciones ya estaban activas.");
+        return; 
+    }
+
+    // 2. Si no hay permiso, lo solicitamos (esto disparará el cuadro en iPhone)
+    const permission = await Notification.requestPermission();
+    
+    if (permission === 'granted') {
+        showToast("¡NOTIFICACIONES ACTIVADAS!");
+        
+        // 3. Enviamos una confirmación visual inmediata
+        new Notification("El Gran Maco Admin", { 
+            body: "Las alertas están listas para tu jornada",
+            icon: "icono.png" 
+        });
+    } else if (permission === 'denied') {
+        showToast("Permiso bloqueado. Actívalo en ajustes.");
+    }
+};
+
+       // 3. FUNCIONES DE ACCESO
+    window.loginGoogle = () => {
+        signInWithPopup(auth, provider).catch(err => console.error("Error login:", err));
+    };
+
+  // --- 3. FUNCIONES DE ACCESO (UNIFICADAS Y SIN DUPLICADOS) ---
+    getRedirectResult(auth).catch(err => console.error("Error redirect:", err));// --- 3. ACCESO UNIFICADO (IPHONE + DATOS) ---
+    getRedirectResult(auth).catch(err => console.error("Error redirect:", err));
+
+    window.loginGoogle = () => {
+        signInWithPopup(auth, provider).catch(err => {
+            if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+                signInWithRedirect(auth, provider);
+            } else {
+                console.error("Error login:", err);
+            }
+        });
+    };
+
+    window.logout = () => {
+        auth.signOut().then(() => location.reload());
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        const loginOverlay = document.getElementById('login-overlay');
+        const adminContent = document.getElementById('admin-content');
+
+        if (user) {
+            if (loginOverlay) loginOverlay.style.display = 'none';
+            if (adminContent) adminContent.style.display = 'block';
+            
+            // 1. Cargamos horarios en memoria
+           get(ref(db, 'sucursales/andaria/configuracion_horario')).then(snap => {
+                if (snap.exists()) {
+                    window.configuracionHorariosGlobal = snap.val();
+                    if (typeof initDashboard === 'function') initDashboard();
+                } else {
+                    if (typeof initDashboard === 'function') initDashboard();
+                }
+            });
+
+            // --- NUEVO: VIGILANTE DE NOTIFICACIONES EN TIEMPO REAL ---
+            // Este bloque se queda escuchando cada vez que entra una cita nueva
+            let inicializado = false; 
+            onValue(ref(db, 'sucursales/andaria/citas'), (snapshot) => {
+                if (!snapshot.exists()) return;
+                
+                // Evitamos que te notifique todas las citas viejas al abrir la página
+                if (!inicializado) {
+                    inicializado = true;
+                    return; 
+                }
+
+                const citas = snapshot.val();
+                const ids = Object.keys(citas);
+                const ultimaId = ids[ids.length - 1];
+                const nuevaCita = citas[ultimaId];
+
+                // Solo notificamos si es "Pendiente" y ocurrió ahora mismo
+                if (nuevaCita.estado === "Pendiente") {
+                    // Usamos tu función de notificación existente
+                    if (typeof enviarNotificacion === 'function') {
+                        enviarNotificacion(nuevaCita.nombre, nuevaCita.servicio);
+                    }
+                }
+            }, { onlyOnce: false }); // <--- CLAVE: Mantiene la escucha activa siempre
+
+        } else {
+            if (loginOverlay) loginOverlay.style.display = 'flex';
+            if (adminContent) adminContent.style.display = 'none';
+        }
+    });
+
+ // --- 4. LÓGICA DE CONFIGURACIÓN (CON MENSAJES Y CARGA AUTOMÁTICA) ---
+
+    // Función para mostrar mensajes (Toast) por si no está definida arriba
+    const mostrarAviso = (msg) => {
+        if (typeof showToast === 'function') {
+            showToast(msg);
+        } else {
+            alert(msg); // Si falla el toast, al menos te sale un aviso
+        }
+    };
+
+    // Función para llenar los selectores con las horas
+    const llenarSelectores = () => {
+        const ids = ['config-apertura', 'config-cierre', 'config-lunch-inicio', 'config-lunch-fin'];
+        ids.forEach(id => {
+            const sel = document.getElementById(id);
+            if (sel) {
+                sel.innerHTML = id.includes('lunch') ? '<option value="">Sin lunch</option>' : '';
+                for (let i = 0; i < 24; i++) {
+                    let h = i.toString().padStart(2, '0');
+                    sel.innerHTML += `<option value="${h}">${h}:00</option>`;
+                }
+            }
+        });
+    };
+
+
+
+// Agrega 'getToken' y 'getMessaging' a tus imports existentes
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+const messaging = getMessaging(app);
+
+// Esta función genera tu dirección única para recibir alertas
+async function solicitarToken() {
+    try {
+        const token = await getToken(messaging, { 
+            vapidKey: 'BEqh993KP_6sknz2_ibfDfrqrzYPM7-JqkGba6hwD-IFIHJUfBV8dAL86eIWKkSPo3mkQIsCOkq9t5ja5NKynOs' 
+        });
+        
+        if (token) {
+            // Guardamos tu token en la base de datos
+            await set(ref(db, 'admin_tokens/token_principal'), token);
+            console.log("¡Dirección de notificaciones guardada!");
+        }
+    } catch (err) {
+        console.error("Error al obtener el token:", err);
+    }
+}
+
+// Llama a la función dentro de tu onAuthStateChanged actual
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        solicitarToken(); // Se activa automáticamente al entrar
+        // ... (el resto de tu código onAuthStateChanged) ...
+    }
+});
+
+
+        // 5. INICIO DEL DASHBOARD
+        function initDashboard() {
+            // ACTIVAR BANDERAS
+            const inputTel = document.querySelector("#add-whatsapp-input");
+            if (inputTel) {
+                iti = window.intlTelInput(inputTel, { 
+                    initialCountry: "gt", 
+                    separateDialCode: true,
+                    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"
+                });
+            }
+
+            // 2. CONFIGURAR CALENDARIO
+            const calendarEl = document.getElementById('calendar');
+if (!calendarEl) return;
+
+calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'es',
+    dayMaxEvents: 2,
+    height: 650,
+    fixedWeekCount: false,
+    allDaySlot: false,
+    slotDuration: '00:30:00',
+    nowIndicator: true,
+    
+    // --- ESTO TE DA EL CONTROL TOTAL ---
+    slotMinTime: '06:00:00', // Tu día empieza a las 6 AM
+    slotMaxTime: '24:00:00', // Tu día termina a las 12 AM
+    
+    headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    editable: true,
+    eventDurationEditable: true, // <-- CAMBIAR A TRUE
+    
+    // Función para cuando mueves la cita (ya la tienes)
+    eventDrop: function(info) {
+        actualizarHorarioCita(info.event);
+    },
+
+    // --- NUEVA FUNCIÓN: PARA CUANDO ESTIRAS LA CITA ---
+    eventResize: function(info) {
+        actualizarDuracionCita(info.event);
+    },
+
+    // --- ESTO ES LO QUE FALTA EN TU PRIMER ARCHIVO ---
+dateClick: function(info) {
+    // 1. Solo actuamos si estamos en la vista de MES
+    if (info.view.type === 'dayGridMonth') {
+        // 2. Actualizamos la fecha que el sistema debe filtrar
+        fechaVisualizada = info.dateStr;
+        
+        // 3. Mostramos el contenedor de las tarjetas y actualizamos el título
+        const detalleDiv = document.getElementById('detalle-agenda-dia');
+        const titulo = document.getElementById('titulo-agenda');
+        
+        detalleDiv.style.display = 'block';
+        titulo.innerText = "CITAS DEL DÍA: " + info.dateStr.split('-').reverse().join('/');
+
+        // 4. Forzamos a renderAdmin a redibujar las tarjetas con la nueva fecha
+        onValue(ref(db, 'sucursales/andaria/citas'), (snapshot) => {
+    renderAdmin(snapshot.val());
+}, { onlyOnce: true });
+
+        // 5. Scroll suave para bajar a ver las tarjetas
+        detalleDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+},
+
+   datesSet: function(info) {
+    fechaVisualizada = info.view.currentStart.toISOString().split('T')[0];
+    onValue(ref(db, 'sucursales/andaria/citas'), (snapshot) => {
+        renderAdmin(snapshot.val());
+    }, { onlyOnce: true });
+},
+
+            // --- SELECCIONAR HORA PARA NUEVA CITA ---
+            selectable: true,
+            select: function(info) {
+                if(info.view.type !== 'dayGridMonth'){
+                    const fecha = info.startStr.split('T')[0];
+                    const hora = info.start.getHours().toString().padStart(2,'0');
+                    const min = info.start.getMinutes().toString().padStart(2,'0');
+                    selectedDateTime = fecha + 'T' + hora + ':' + min;
+                    
+                    document.getElementById('add-fecha-display').innerText = info.start.toLocaleString('es-GT', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+                    document.getElementById('modalAddCita').style.display = 'flex';
+                }
+            },
+
+            // --- CLIC EN CITA (DETALLE, WHATSAPP Y EDICIÓN) ---
+            eventClick: function(info) {
+                currentEditingId = info.event.id;
+                const meta = info.event.extendedProps;
+                const fTxt = info.event.start.toLocaleString('es-GT', { 
+                    weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' 
+                });
+                
+                document.getElementById('pop-nombre').innerText = meta.nombre;
+                document.getElementById('pop-fecha').innerText = fTxt;
+                document.getElementById('pop-detalle-corte').innerHTML = `
+                    <div style="color:var(--gold); font-size:1.1rem; font-weight:600; margin-bottom:5px;">
+                        ${meta.servicio}
+                    </div>
+                    <div style="color:var(--green); font-weight:600; font-size:1.2rem;">Q${meta.precio}</div>
+                ` + (meta.nota ? `<p style="font-size:0.8rem; color:#888; margin-top:15px; background:#111; padding:10px; border-radius:10px;">Nota: ${meta.nota}</p>` : "");
+                
+                document.getElementById('pop-whatsapp').onclick = function() {
+                    const num = meta.whatsapp.replace(/\D/g,'');
+                    const msg = encodeURIComponent('Hola ' + meta.nombre + ', te recordamos tu cita en El Gran Maco Andaria para el ' + fTxt + '. ¡Te esperamos!');
+                    window.open('https://wa.me/' + num + '?text=' + msg);
+                };
+                
+                const fullWhatsapp = meta.whatsapp || "";
+                const codigos = ["502", "503", "504", "505", "506", "507", "52", "1"];
+                let encontrado = "502"; 
+                let numLimpio = fullWhatsapp;
+                let configuracionHorariosGlobal = {}; // Guardará todos los días aquí
+
+                for (let cod of codigos) {
+                    if (fullWhatsapp.startsWith(cod)) {
+                        encontrado = cod;
+                        numLimpio = fullWhatsapp.substring(cod.length); 
+                        break;
+                    }
+                }
+
+                document.getElementById('edit-nombre').value = meta.nombre;
+                document.getElementById('edit-codigo-area').value = encontrado;
+                document.getElementById('edit-whatsapp').value = numLimpio;
+                document.getElementById('edit-precio').value = meta.precio;
+                document.getElementById('edit-nota').value = meta.nota || "";
+                document.getElementById('edit-servicio-select').value = ""; 
+
+                document.getElementById('modalEvento').style.display = 'flex';
+
+                document.getElementById('btn-eliminar-pop').onclick = function() {
+                    confirmarAccion("¿Seguro que quieres eliminar permanentemente esta cita?", function() {
+                        remove(ref(db, 'citas/' + currentEditingId)).then(() => {
+                            showToast("CITA ELIMINADA");
+                            cerrarPop();
+                        });
+                    });
+                };
+            }
+        });
+
+            calendar.render(); // Ahora sí, renderizamos
+
+
+
+
+            // --- BOTÓN DE ACTUALIZAR CITA ---
+            document.getElementById('btn-update-cita').onclick = function() {
+                const servSelect = document.getElementById('edit-servicio-select');
+                const cod = document.getElementById('edit-codigo-area').value;
+                const num = document.getElementById('edit-whatsapp').value;
+                const whatsappCompleto = cod + num;
+
+                const updateData = {
+                    nombre: document.getElementById('edit-nombre').value,
+                    whatsapp: whatsappCompleto,
+                    precio: document.getElementById('edit-precio').value,
+                    nota: document.getElementById('edit-nota').value
+                };
+
+                if(servSelect && servSelect.value) {
+                    updateData.servicio = catalogoGlobal[servSelect.value].nombre;
+                    updateData.precio = catalogoGlobal[servSelect.value].precio;
+                }
+
+                update(ref(db, 'sucursales/andaria/citas/' + currentEditingId), updateData).then(() => { 
+                    showToast("CITA ACTUALIZADA"); 
+                    cerrarPop(); 
+                });
+            };
+            // SINCRONIZACIÓN DE CITAS (TIEMPO REAL)
+           onValue(ref(db, 'sucursales/andaria/citas'), (snapshot) => {
+    renderAdmin(snapshot.val());
+});
+
+            // SINCRONIZACIÓN DE CATÁLOGO
+            onValue(ref(db, 'sucursales/andaria/servicios'), (snapshot) => {
+    renderServicios(snapshot.val() || {});
+});
+        }
+
+        function actualizarDuracionCita(event) {
+    const citaId = event.id;
+    const fin = event.end;
+
+    if (!fin) return; // Si no tiene hora de fin definida, no hace nada
+
+    // Formateamos la hora final (HH:mm)
+    const horas = String(fin.getHours()).padStart(2, '0');
+    const minutos = String(fin.getMinutes()).padStart(2, '0');
+    const nuevaHoraFin = `${horas}:${minutos}`;
+
+    // Actualizamos en Firebase agregando el campo horaFin
+    update(ref(db, 'citas/' + citaId), {
+        horaFin: nuevaHoraFin
+    }).then(() => {
+        showToast("DURACIÓN ACTUALIZADA");
+    }).catch((error) => {
+        console.error("Error al redimensionar:", error);
+        showToast("ERROR AL CAMBIAR DURACIÓN");
+        location.reload(); 
+    });
+}
+
+       // --- RENDERIZADO MAESTRO DE DATOS ---
+function renderAdmin(data) {
+    const lista = document.getElementById('lista-citas');
+    const cCount = document.getElementById('citas-count');
+    const iTotal = document.getElementById('ingreso-total');
+    const pCount = document.getElementById('count-pendientes');
+    const pLabel = document.getElementById('label-pendientes');
+    const desglose = document.getElementById('desglose-servicios');
+    
+    lista.innerHTML = ''; 
+    desglose.innerHTML = '';
+    
+    let finalizadosMes = 0;
+    let ingresosMes = 0;
+    let pendientesDiaEnPantalla = 0;
+    let eventosCalendar = [];
+    let contadorServicios = {};
+
+    // --- CORRECCIÓN DE MES DINÁMICO ---
+    const fechaReferencia = new Date(fechaVisualizada + "T12:00:00");
+    const mesEnPantalla = fechaReferencia.getMonth();
+    const añoEnPantalla = fechaReferencia.getFullYear();
+
+    const ahoraHoy = new Date();
+    const hoyRealIso = ahoraHoy.toISOString().split('T')[0];
+
+    // Actualizar etiqueta del contador dorado
+    if (fechaVisualizada === hoyRealIso) {
+        pLabel.innerText = "Pendientes Hoy";
+    } else {
+        const opciones = { day: 'numeric', month: 'short' };
+        const fechaFormateada = fechaReferencia.toLocaleDateString('es-GT', opciones);
+        pLabel.innerText = "Pendientes " + fechaFormateada;
+    }
+
+    // --- NUEVO: INTEGRACIÓN DE LUNCH TIME (PARA QUE NO PARPADEE) ---
+    // Recorremos los días visibles en el calendario para pintar los bloques rojos
+    const diasBusqueda = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    let fIterada = new Date(calendar.view.activeStart);
+    const fFin = new Date(calendar.view.activeEnd);
+
+    while (fIterada < fFin) {
+        const iso = fIterada.toISOString().split('T')[0];
+        const nombreDia = diasBusqueda[fIterada.getDay()];
+        
+        // Usamos la configuración que ya tenemos en memoria global
+        const conf = window.configuracionHorariosGlobal ? window.configuracionHorariosGlobal[nombreDia] : null;
+
+        if (conf && conf.lunch_inicio && conf.lunch_fin) {
+    eventosCalendar.push({
+        id: 'lunch-' + iso,
+        title: 'LUNCH TIME', // Quitamos el emoji para que no se vea amontonado en el mes
+        start: `${iso}T${conf.lunch_inicio}:00`,
+        end: `${iso}T${conf.lunch_fin}:00`,
+        backgroundColor: '#ff4d4d', 
+        borderColor: '#ff4d4d',
+        textColor: '#ffffff',
+        editable: false,
+        // CAMBIOS CLAVE:
+        display: 'auto', // En Mes será punto, en Semana/Día será bloque
+        classNames: ['lunch-event'] // Clase para el CSS
+    });
+}
+        fIterada.setDate(fIterada.getDate() + 1);
+    }
+
+    if(data){
+        // --- 1. ORDENAMIENTO POR HORA ---
+        const listaOrdenada = Object.keys(data).map(id => ({
+            id: id,
+            ...data[id]
+        })).sort((a, b) => {
+            if (!a.fecha || !b.fecha) return 0;
+            return a.fecha.localeCompare(b.fecha);
+        });
+
+        // --- 2. PROCESAMIENTO DE CITAS ---
+        listaOrdenada.forEach(cita => {
+            const id = cita.id;
+            if (!cita.fecha) return;
+
+            const esFinalizada = cita.estado === 'Finalizada';
+            const esPendiente = cita.estado !== 'Finalizada'; 
+            const fechaLimpia = cita.fecha.split('T')[0];
+            const fCita = new Date(fechaLimpia + "T12:00:00");
+
+            // MÉTRICAS BASADAS EN EL MES QUE ESTÁS VIENDO
+            if(esFinalizada && fCita.getMonth() === mesEnPantalla && fCita.getFullYear() === añoEnPantalla) { 
+                finalizadosMes++; 
+                ingresosMes += parseFloat(cita.precio || 0); 
+                if(cita.servicio) {
+                    contadorServicios[cita.servicio] = (contadorServicios[cita.servicio] || 0) + 1; 
+                }
+            }
+
+            // PENDIENTES DEL DÍA SELECCIONADO
+            if (esPendiente && fechaLimpia === fechaVisualizada) {
+                pendientesDiaEnPantalla++;
+            }
+
+            // --- EVENTOS DEL CALENDARIO ---
+            let objetoEvento = { 
+                id: id, 
+                title: cita.nombre, 
+                start: cita.fecha, 
+                backgroundColor: esFinalizada ? '#1a1a1a' : '#d4af37', 
+                borderColor: esFinalizada ? '#222' : '#aa8c2c',
+                textColor: esFinalizada ? '#555' : '#000', 
+                extendedProps: { ...cita } 
+            };
+
+            if (cita.horaFin) {
+                objetoEvento.end = `${fechaLimpia}T${cita.horaFin}`;
+            }
+
+            eventosCalendar.push(objetoEvento);
+            
+            // --- TARJETAS (CINTAS) ---
+            if (esPendiente && fechaLimpia === fechaVisualizada){
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.cursor = "pointer"; 
+                
+                const horaInicio = cita.fecha.split('T')[1];
+                const horaRango = cita.horaFin ? `${horaInicio} - ${cita.horaFin}` : horaInicio;
+                
+                card.innerHTML = `
+                    <div style="flex:1" onclick="abrirEventoDirecto('${id}')">
+                        <div style="font-size:0.6rem; color:var(--gold); font-weight:600; text-transform:uppercase; margin-bottom:2px;">
+                            ${horaRango} | ${cita.servicio}
+                        </div>
+                        <h4 style="margin:0; font-size:0.85rem; letter-spacing:0.5px;">${cita.nombre}</h4>
+                        ${cita.nota ? `<p style="margin:4px 0 0; font-size:0.65rem; color:#555; font-style:italic;">"${cita.nota}"</p>` : ""}
+                    </div>
+                    <button class="btn-mini" onclick="event.stopPropagation(); cambiarEstado('${id}','Finalizada')">
+                        <i class="fas fa-check"></i> FIN
+                    </button>
+                `;
+                lista.appendChild(card);
+            }
+        });
+    }
+
+    // ACTUALIZACIÓN DE LA INTERFAZ
+    Object.keys(contadorServicios).forEach(serv => {
+        desglose.innerHTML += `<div class="serv-stat-item"><span>${serv}</span><span>x${contadorServicios[serv]}</span></div>`;
+    });
+
+    cCount.innerText = finalizadosMes;
+    iTotal.innerText = 'Q' + ingresosMes.toLocaleString('es-GT', { minimumFractionDigits: 2 });
+    pCount.innerText = pendientesDiaEnPantalla;
+
+    // LIMPIEZA Y RE-PINTADO TOTAL (Citas + Lunch juntos)
+    calendar.removeAllEvents();
+    calendar.addEventSource(eventosCalendar);
+}
+
+        // --- FUNCIONES DE EDICIÓN ---
+        window.entrarModoEdicion = function() { 
+            document.getElementById('view-mode').style.display = 'none'; 
+            document.getElementById('edit-mode').style.display = 'block'; 
+        };
+
+        window.salirModoEdicion = function() { 
+            document.getElementById('view-mode').style.display = 'block'; 
+            document.getElementById('edit-mode').style.display = 'none'; 
+        };
+
+        document.getElementById('btn-update-cita').onclick = function() {
+    const servSelect = document.getElementById('edit-servicio-select');
+    
+    // CAPTURAMOS AMBOS CAMPOS Y LOS UNIMOS
+    const cod = document.getElementById('edit-codigo-area').value;
+    const num = document.getElementById('edit-whatsapp').value;
+    const whatsappCompleto = cod + num;
+
+    const updateData = {
+        nombre: document.getElementById('edit-nombre').value,
+        whatsapp: whatsappCompleto, // Guardamos la unión de código + número
+        precio: document.getElementById('edit-precio').value,
+        nota: document.getElementById('edit-nota').value
+    };
+
+    // Si se seleccionó un nuevo servicio del catálogo, actualizar nombre y precio
+    if(servSelect.value) {
+        updateData.servicio = catalogoGlobal[servSelect.value].nombre;
+        updateData.precio = catalogoGlobal[servSelect.value].precio;
+    }
+
+    update(ref(db, 'sucursales/andaria/citas/' + currentEditingId), updateData).then(() => { 
+        showToast("CITA ACTUALIZADA"); 
+        cerrarPop(); 
+    });
+};
+
+
+// --- FUNCIÓN PARA ELIMINAR CITA ---
+window.eliminarCita = function() {
+    if (!currentEditingId) {
+        showToast("ERROR: NO SE ENCONTRÓ LA CITA");
+        return;
+    }
+
+    // Personalizamos el texto del modal que ya tienes
+    const txt = document.getElementById('confirm-text');
+    if (txt) txt.innerText = "¿ESTÁS SEGURO DE QUE DESEAS ELIMINAR ESTA CITA? ESTA ACCIÓN NO SE PUEDE DESHACER.";
+
+    // Mostramos tu modal elegante
+    const modalConfirm = document.getElementById('modalConfirm');
+    if (modalConfirm) modalConfirm.style.display = 'flex';
+};
+
+// Definimos confirmarAccion para que el navegador deje de lanzar el error
+window.confirmarAccion = function() {
+    eliminarCita(); 
+};
+
+// --- 2. ACCIÓN REAL DE ELIMINAR AL DARLE A "SÍ, PROCEDER" ---
+document.getElementById('confirm-yes').onclick = function() {
+    // CASO A: Borrar Servicio
+    if (idServicioParaBorrar) {
+        remove(ref(db, 'sucursales/andaria/servicios/' + idServicioParaBorrar)).then(() => {
+            showToast("SERVICIO ELIMINADO");
+            idServicioParaBorrar = null;
+            document.getElementById('modalConfirm').style.display = 'none';
+        });
+    } 
+    // CASO B: Borrar Bloqueo de Día (NUEVO)
+    else if (fechaBloqueoParaBorrar) {
+        remove(ref(db, `dias_bloqueados/${fechaBloqueoParaBorrar}`)).then(() => {
+            showToast("DÍA DESBLOQUEADO");
+            fechaBloqueoParaBorrar = null; // Limpiamos la variable
+            document.getElementById('modalConfirm').style.display = 'none';
+        });
+    }
+    // CASO C: Borrar Cita
+    else if (currentEditingId) {
+    remove(ref(db, 'sucursales/andaria/citas/' + currentEditingId)).then(() => {
+            showToast("CITA ELIMINADA");
+            document.getElementById('modalConfirm').style.display = 'none';
+            const modalEvento = document.getElementById('modalEvento');
+            if (modalEvento) modalEvento.style.display = 'none';
+        });
+    }
+};
+
+
+
+// --- FUNCIÓN PARA CARGAR DATOS SEGÚN EL DÍA (CON RESET VISUAL) ---
+window.cargarConfigDia = async (dia) => {
+    // 1. Limpiamos el display inmediatamente antes de consultar
+    document.getElementById('config-apertura').value = "06";
+    document.getElementById('config-cierre').value = "22";
+    document.getElementById('config-lunch-inicio').value = "";
+    document.getElementById('config-lunch-fin').value = "";
+
+    try {
+        const snapshot = await get(ref(db, `sucursales/andaria/configuracion_horario/${dia}`));
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            document.getElementById('config-apertura').value = data.apertura || "06";
+            document.getElementById('config-cierre').value = data.cierre || "22";
+            document.getElementById('config-lunch-inicio').value = data.lunch_inicio || "";
+            document.getElementById('config-lunch-fin').value = data.lunch_fin || "";
+        }
+    } catch (e) {
+        console.error("Error al cargar configuración:", e);
+    }
+};
+
+// --- FUNCIÓN PARA ABRIR EL PANEL (AHORA CARGA EL DÍA AUTOMÁTICAMENTE) ---
+window.toggleConfig = () => {
+    const modal = document.getElementById('modalConfig');
+    if (!modal) return;
+    
+    if (modal.style.display === 'none' || modal.style.display === '') {
+        llenarSelectores(); // Llenamos las listas de horas 00-23
+        const diaActual = document.getElementById('config-dia-semana').value;
+        cargarConfigDia(diaActual); // Forzamos la carga del día visible
+        modal.style.display = 'flex';
+    } else {
+        modal.style.display = 'none';
+    }
+};
+
+
+
+        window.cambiarEstado = function(id, nuevoEstado) { 
+            update(ref(db, 'sucursales/andaria/citas/' + id), { estado: nuevoEstado }).then(() => {
+                showToast("SERVICIO COMPLETADO");
+            });
+        };
+
+        window.cerrarPop = function() { 
+            document.getElementById('modalEvento').style.display = 'none'; 
+            salirModoEdicion(); 
+        };
+
+        window.cerrarModalAdd = function() { 
+            document.getElementById('modalAddCita').style.display = 'none'; 
+            // Limpiar campos
+            document.getElementById('add-nombre').value = '';
+            document.getElementById('add-nota').value = '';
+        };
+
+        // --- GESTIÓN DE SERVICIOS (CATÁLOGO) ---
+        function renderServicios(servs) {
+    catalogoGlobal = servs;
+    const selAdd = document.getElementById('add-servicio-select');
+    const selEdit = document.getElementById('edit-servicio-select');
+    const listaAdmin = document.getElementById('lista-servicios-admin');
+    
+    selAdd.innerHTML = '<option value="">Selecciona un servicio...</option>';
+    selEdit.innerHTML = '<option value="">(Sin cambios de servicio)</option>';
+    listaAdmin.innerHTML = '';
+
+    Object.keys(servs).forEach(id => {
+        const s = servs[id];
+        const optHtml = `<option value="${id}">${s.nombre} - Q${s.precio}</option>`;
+        selAdd.innerHTML += optHtml;
+        selEdit.innerHTML += optHtml;
+
+        const item = document.createElement('div');
+        // Estilo de contenedor tipo tarjeta
+        item.style.cssText = "background:rgba(255,255,255,0.03); margin-bottom:10px; border-radius:15px; border:1px solid #1a1a1a; overflow:hidden;";
+        
+        item.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; cursor:pointer;" 
+                 onclick="const panel = this.nextElementSibling; panel.style.display = panel.style.display === 'none' ? 'block' : 'none'">
+                <div style="font-size:0.8rem; font-weight:600;">
+                    ${s.nombre} <span style="color:var(--gold); margin-left:10px;">Q${s.precio}</span>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size:0.7rem; color:#444;"></i>
+            </div>
+            
+            <div style="display:none; padding:0 15px 15px; border-top:1px solid #111; background: rgba(0,0,0,0.2);">
+                <p style="font-size:0.7rem; color:#888; margin:12px 0; line-height:1.4;">
+                    <strong style="color:var(--gold); font-size:0.6rem; text-transform:uppercase;">Incluye:</strong><br>
+                    ${s.detalle || "Sin descripción disponible"}
+                </p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-mini" style="background:var(--gold); flex:1; height:35px;" onclick="prepararEdicionServicio('${id}')">
+                        <i class="fas fa-edit"></i> EDITAR
+                    </button>
+                    <button class="btn-mini" style="background:rgba(255,77,77,0.1); color:var(--red); border:1px solid var(--red); width:40px; height:35px;" onclick="eliminarServicio('${id}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        listaAdmin.appendChild(item);
+    });
+}
+
+
+// IMPORTANTE: Esta variable debe estar afuera para que todo el script la vea
+let idServicioEnEdicion = null; 
+
+window.prepararEdicionServicio = function(id) {
+    const s = catalogoGlobal[id];
+    idServicioEnEdicion = id; // Aquí guardamos el ID para que el botón sepa qué editar
+    
+    document.getElementById('serv-n').value = s.nombre;
+    document.getElementById('serv-p').value = s.precio;
+    document.getElementById('serv-d').value = s.detalle || "";
+    
+    const btn = document.getElementById('btn-add-serv');
+    btn.innerText = "GUARDAR CAMBIOS";
+    btn.style.background = "#2ecc71"; // Verde para saber que estamos editando
+    
+    document.getElementById('serv-n').scrollIntoView({ behavior: 'smooth' });
+};
+
+// 3. Modificamos tu evento original para que sepa si está agregando o editando
+document.getElementById('btn-add-serv').onclick = () => {
+    const n = document.getElementById('serv-n').value;
+    const p = document.getElementById('serv-p').value;
+    const d = document.getElementById('serv-d').value;
+
+    if(!n || !p) return showToast("LLENA NOMBRE Y PRECIO");
+
+    if(idServicioEnEdicion) {
+        // --- MODO ACTUALIZAR (Usa el ID guardado) ---
+        update(ref(db, 'sucursales/andaria/servicios/' + idServicioEnEdicion), {
+            nombre: n, precio: p, detalle: d
+        }).then(() => {
+            showToast("SERVICIO ACTUALIZADO");
+            limpiarFormServicio();
+        });
+    } else {
+        // --- MODO AGREGAR (Crea uno nuevo solo si el ID es null) ---
+        push(ref(db, 'sucursales/andaria/servicios'), {
+            nombre: n, precio: p, detalle: d
+        }).then(() => {
+            showToast("NUEVO SERVICIO AÑADIDO");
+            limpiarFormServicio();
+        });
+    }
+};
+
+function limpiarFormServicio() {
+    idServicioEnEdicion = null; // CRÍTICO: Resetear para que el próximo clic sea "Agregar"
+    document.getElementById('serv-n').value = '';
+    document.getElementById('serv-p').value = '';
+    document.getElementById('serv-d').value = '';
+    
+    const btn = document.getElementById('btn-add-serv');
+    btn.innerText = "AGREGAR SERVICIO";
+    btn.style.background = ""; // Vuelve al dorado original
+}
+
+        let idServicioParaBorrar = null; // Variable global para el servicio
+
+window.eliminarServicio = function(id) {
+    idServicioParaBorrar = id; // Guardamos el ID del servicio
+    
+    // Cambiamos el texto del modal para que sea específico al servicio
+    const txt = document.getElementById('confirm-text');
+    if (txt) txt.innerText = "¿ESTÁS SEGURO DE QUE DESEAS ELIMINAR ESTE SERVICIO DEL CATÁLOGO?";
+
+    // Mostramos tu modal personalizado
+    const modalConfirm = document.getElementById('modalConfirm');
+    if (modalConfirm) modalConfirm.style.display = 'flex';
+};
+
+       
+        // --- LÓGICA DE BLOQUEO DE DÍAS CON AUTO-LIMPIEZA ---
+const fpBlock = flatpickr("#input-block-date", { locale: "es", minDate: "today", dateFormat: "Y-m-d" });
+
+onValue(ref(db, 'sucursales/andaria/dias_bloqueados'), snap => {
+    const list = document.getElementById('lista-bloqueos-admin');
+    list.innerHTML = ''; 
+    const bloqueos = snap.val() || {};
+    
+    // 1. Obtenemos la fecha de hoy (YYYY-MM-DD)
+    const hoy = new Date().toISOString().split('T')[0];
+
+    Object.keys(bloqueos).forEach(f => {
+        // 2. Si la fecha guardada es menor a hoy, la borramos de Firebase
+        if (f < hoy) {
+            remove(ref(db, `sucursales/andaria/dias_bloqueados/${f}`));
+        } else {
+            // 3. Solo mostramos los días presentes o futuros
+            list.innerHTML += `
+                <div class="block-item-admin">
+                    <span>${f}</span>
+                    <i class="fas fa-trash" style="color:var(--red); cursor:pointer;" 
+                       onclick="eliminarBloqueo('${f}')"></i>
+                </div>`;
+        }
+    });
+});
+
+window.eliminarBloqueo = (f) => {
+    fechaBloqueoParaBorrar = f; // Guardamos la fecha
+    
+    // Cambiamos el texto del modal
+    const txt = document.getElementById('confirm-text');
+    if (txt) txt.innerText = "¿ESTÁS SEGURO DE QUE DESEAS DESBLOQUEAR EL DÍA " + f + "?";
+
+    // Mostramos tu modal elegante
+    const modalConfirm = document.getElementById('modalConfirm');
+    if (modalConfirm) modalConfirm.style.display = 'flex';
+};
+
+document.getElementById('btn-add-block').onclick = () => {
+    const f = document.getElementById('input-block-date').value;
+    if(f) {
+        set(ref(db, `sucursales/andaria/dias_bloqueados/${f}`), true).then(() => {
+            showToast("DÍA BLOQUEADO CORRECTAMENTE");
+            document.getElementById('input-block-date').value = '';
+        });
+    } else {
+        showToast("SELECCIONA UNA FECHA");
+    }
+};
+        // ... (todo tu código anterior de botones y bloqueos)
+
+        // --- FUNCIÓN PARA MOVER CITAS (DRAG & DROP) ---
+        function actualizarHorarioCita(event) {
+    const citaId = event.id;
+    
+    // Convertimos la fecha al formato que entiende tu sistema (YYYY-MM-DDTHH:mm)
+    // Esto asegura que el "index" detecte el cambio correctamente
+    const start = event.start;
+    const year = start.getFullYear();
+    const month = String(start.getMonth() + 1).padStart(2, '0');
+    const day = String(start.getDate()).padStart(2, '0');
+    const hours = String(start.getHours()).padStart(2, '0');
+    const minutes = String(start.getMinutes()).padStart(2, '0');
+    
+    const nuevaFechaFormateada = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    // Actualizamos en Firebase
+    update(ref(db, 'sucursales/andaria/citas/' + citaId), {
+    fecha: nuevaFechaFormateada
+}).then(() => {
+        showToast("HORARIO ACTUALIZADOO");
+    }).catch((error) => {
+        console.error("Error al mover:", error);
+        showToast("ERROR AL REPROGRAMAR");
+        location.reload(); 
+    });
+}
+        window.abrirEventoDirecto = function(id) {
+    const ev = calendar.getEventById(id);
+    if(ev) calendar.trigger('eventClick', { event: ev });
+};
+        // --- LÓGICA DEL BUSCADOR DE CLIENTES ---
+
+// 1. Llenar la lista de sugerencias con los nombres de Firestore
+onSnapshot(collection(fs, "clientes"), (snapshot) => {
+    const datalist = document.getElementById('listaClientes');
+    if(!datalist) return;
+    datalist.innerHTML = "";
+    snapshot.forEach((doc) => {
+        const opt = document.createElement('option');
+        opt.value = doc.data().nombre;
+        datalist.appendChild(opt);
+    });
+});
+
+// 2. Al escribir el nombre, si existe, poner el teléfono automático
+document.getElementById('add-nombre').addEventListener('input', async (e) => {
+    const nombreDigitado = e.target.value;
+    if(nombreDigitado.length < 3) return; 
+
+    const q = query(collection(fs, "clientes"), where("nombre", "==", nombreDigitado));
+    const snap = await getDocs(q);
+    
+    snap.forEach((doc) => {
+        const datos = doc.data();
+        const telCompleto = datos.whatsapp || datos.telefono || ""; 
+        
+        if (telCompleto) {
+            // Ejemplo: si telCompleto es "50212345678"
+            // Los primeros 3 dígitos van al selector (502)
+            document.getElementById('add-codigo-area').value = telCompleto.substring(0, 3);
+            // El resto va al input del número (12345678)
+            document.getElementById('add-whatsapp').value = telCompleto.substring(3);
+        }
+    });
+});
+
+// --- BLOQUE FINAL DE SEGURIDAD ---
+
+window.showToast = (message) => {
+    let toast = document.getElementById('toast-aviso');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-aviso';
+        document.body.appendChild(toast);
+    }
+    
+    // Icono y mensaje
+    toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${message}</span>`;
+    
+    // Activamos la animación de subida
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+
+    // Lo bajamos y ocultamos tras 3 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+};
+
+
+
+
+
+
+
+
+// --- LÓGICA PARA EL BOTÓN CONFIRMAR CITA (AGREGAR AL CALENDARIO) ---
+document.getElementById('btn-save-cita-calendar').onclick = async () => {
+    const nombre = document.getElementById('add-nombre').value;
+    const cod = document.getElementById('add-codigo-area').value;
+    const num = document.getElementById('add-whatsapp').value;
+    const servicioId = document.getElementById('add-servicio-select').value;
+    const nota = document.getElementById('add-nota').value;
+
+    // 1. Validaciones de seguridad
+    if (!nombre || !num || !servicioId || !selectedDateTime) {
+        showToast("LLENA NOMBRE, TELÉFONO Y SERVICIO");
+        return;
+    }
+
+    const servicio = catalogoGlobal[servicioId];
+    const whatsappCompleto = cod + num;
+
+    // 2. Estructura de la cita para Firebase
+    const nuevaCita = {
+        nombre: nombre,
+        whatsapp: whatsappCompleto,
+        servicio: servicio.nombre,
+        precio: servicio.precio,
+        nota: nota || "Sin notas",
+        fecha: selectedDateTime, // Se captura al hacer clic en el calendario
+        estado: 'Pendiente'
+    };
+
+    try {
+        // 3. Guardar en Realtime Database (Agenda activa)
+        await push(ref(db, 'sucursales/andaria/citas'), nuevaCita);
+
+        // 4. Sincronizar con Firestore (Buscador de clientes)
+        const clienteID = nombre.toLowerCase().trim().replace(/\s+/g, '_');
+        await setDoc(doc(fs, "clientes", clienteID), {
+            nombre: nombre,
+            whatsapp: whatsappCompleto,
+            ultima_visita: new Date().toISOString()
+        }, { merge: true });
+
+        showToast("CITA AGENDADA CON ÉXITO");
+        cerrarModalAdd(); // Función que ya tienes para limpiar y cerrar
+    } catch (error) {
+        console.error("Error al agendar:", error);
+        showToast("ERROR AL GUARDAR");
+    }
+};
+
+
+// Busca el botón por su nuevo ID
+document.getElementById('btn-save-hours').onclick = async () => {
+    // 1. Capturamos los valores de los inputs del panel
+    const dia = document.getElementById('config-dia-semana').value; 
+    const apertura = document.getElementById('config-apertura').value;
+    const cierre = document.getElementById('config-cierre').value;
+    const lunch_inicio = document.getElementById('config-lunch-inicio').value;
+    const lunch_fin = document.getElementById('config-lunch-fin').value;
+
+    // 2. Validación de seguridad para tu jornada (6 am a 10 pm)
+    if (parseInt(apertura) >= parseInt(cierre)) {
+        showToast("LA APERTURA DEBE SER ANTES DEL CIERRE");
+        return;
+    }
+
+    try {
+        const nuevaConfig = {
+            apertura: apertura,
+            cierre: cierre,
+            lunch_inicio: lunch_inicio,
+            lunch_fin: lunch_fin
+        };
+
+        // 3. Guardar en la base de datos
+        await set(ref(db, `sucursales/andaria/configuracion_horario/${dia}`), nuevaConfig);
+
+        // --- PASO CLAVE 1: ACTUALIZAR LA MEMORIA GLOBAL DE INMEDIATO ---
+        if (!window.configuracionHorariosGlobal) window.configuracionHorariosGlobal = {};
+        window.configuracionHorariosGlobal[dia] = nuevaConfig;
+
+        // --- PASO CLAVE 2: REFRESCAR EL CALENDARIO PARA PINTAR EL LUNCH ---
+        if (calendar) {
+            // Esto obliga al calendario a ejecutar 'datesSet' otra vez con los nuevos datos
+            const vistaActual = calendar.view.type;
+            calendar.changeView(vistaActual); 
+        }
+
+        showToast(`HORARIO DE ${dia.toUpperCase()} ACTUALIZADO`);
+        
+    } catch (error) {
+        console.error(error);
+        showToast("ERROR AL GUARDAR");
+    }
+};
+
+</script>
+</body>
+</html>

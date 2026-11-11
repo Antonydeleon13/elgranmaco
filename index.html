@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KEQM3D5L1P"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KEQM3D5L1P');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Gran Maco | Elite Style</title>
+
+    <!-- Metadatos de Vista Previa para WhatsApp -->
+    <meta property="og:title" content="El Gran Maco | Elite Style">
+    <meta property="og:description" content="Reserva tu cita y vive la experiencia de un estilo de élite.">
+    <meta property="og:image" content="https://agendainnovation.com/icono.png">
+    <meta property="og:type" content="website">
+
+    <!-- Fuentes y Estilos -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --gold: #c5a059;
+            --gold-light: #fdfaf5;
+            --gold-hover: #d4af37;
+            --dark: #0f1115;
+            --dark-card: #181b22;
+            --card-bg: #ffffff;
+            --border-glow: rgba(197, 160, 89, 0.25);
+            --text: #1a1d24;
+            --text-muted: #64748b;
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            scroll-behavior: smooth; 
+        }
+
+        body {
+            background-color: #fafbfc;
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- NAVEGACIÓN CON EFECTO GLOW --- */
+        nav {
+            position: fixed;
+            top: 0; 
+            width: 100%;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+        }
+
+        .logo-nav {
+            height: 42px;
+            width: auto;
+            display: block;
+            transition: var(--transition);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        .logo-nav:hover { 
+            transform: scale(1.08) rotate(-2deg); 
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; 
+            left: 0; 
+            width: 0; 
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover { 
+            color: var(--gold); 
+            text-shadow: 0 0 10px rgba(197,160,89,0.3);
+        }
+
+        .nav-links a:hover::after { 
+            width: 100%; 
+        }
+
+        .menu-toggle {
+            display: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        /* --- HERO BANNER CON EFECTO ZOOM SUAVE Y PULSO --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #ffffff;
+            padding-top: 80px;
+        }
+
+       .banner-wrapper {
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: calc(100vh - 80px);
+            overflow: hidden;
+        }
+
+        .banner-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: 
+                radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 0),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.7) 60%, rgba(255, 255, 255, 0.95) 100%),
+                url('banner.JPG') center/cover no-repeat;
+            background-size: 4px 4px, 100% 100%, cover;
+            /* Se removió el grayscale(100%) para que luzca a color */
+            filter: contrast(115%) brightness(1.05);
+            opacity: 0.35;
+            z-index: 0;
+            transform: scale(1.02);
+            animation: slowZoom 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        .banner-top-title,
+        .banner-center-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .banner-top-title {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+            padding: 24px 20px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.15);
+            letter-spacing: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+            font-weight: 500;
+            animation: fadeInDown 1s ease;
+        }
+
+        .banner-top-title span {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .banner-center-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 50px 20px;
+            margin: auto;
+            max-width: 900px;
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-logo-central {
+            width: 100%;
+            max-width: 190px;
+            height: auto;
+            margin: 0 auto 30px auto;
+            display: block;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+            animation: floatLogo 5s ease-in-out infinite;
+        }
+
+        .banner-center-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: var(--text);
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            line-height: 1.2;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.03);
+        }
+
+        .banner-center-content p {
+            font-size: 0.95rem;
+            color: #9c7b2e;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+
+        /* BOTÓN CON EFECTO BRILLO/SHINE ANIMADO */
+        .btn-gold {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(135deg, var(--gold), #96751c);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            font-size: 0.75rem;
+            border-radius: 100px;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(60deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform 0.7s ease-in-out;
+        }
+
+        .btn-gold:hover::after {
+            transform: rotate(45deg) translateX(100%);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(197, 160, 89, 0.6);
+            background: #111317;
+            color: #fff;
+            border-color: var(--gold);
+        }
+
+        /* --- SECCIÓN SERVICIOS --- */
+        .section { 
+            padding: 100px 10%; 
+            position: relative; 
+            background: #ffffff;
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            background: #fdfdfd;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title p {
+            color: var(--gold);
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .section-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            color: var(--text);
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+
+        /* --- SECCIÓN UBICACIÓN Y SUCURSALES CON EFECTO CARD HOVER 3D --- */
+        .contact-section {
+            background: linear-gradient(to bottom, #fafbfc, #f1f3f6);
+            padding: 120px 8%;
+            text-align: center;
+            border-top: 1px solid rgba(197, 160, 89, 0.12);
+            position: relative;
+        }
+
+        .branches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 35px;
+            max-width: 1050px;
+            margin: 0 auto 60px auto;
+        }
+
+        .branch-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            text-align: left;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
+            position: relative;
+        }
+
+        .branch-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 3;
+        }
+
+        .branch-card:hover {
+            transform: translateY(-12px) scale(1.01);
+            border-color: var(--gold);
+            box-shadow: 0 30px 60px rgba(197, 160, 89, 0.18);
+        }
+
+        .branch-card:hover::before {
+            opacity: 1;
+        }
+
+        .branch-image-wrapper {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .branch-image-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.25), transparent);
+            transition: var(--transition);
+        }
+
+        .branch-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+            filter: brightness(0.98);
+        }
+
+        .branch-card:hover .branch-img {
+            transform: scale(1.1);
+            filter: brightness(1.05);
+        }
+
+        .branch-content {
+            padding: 35px;
+        }
+
+        .branch-icon-header {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+            display: inline-flex;
+            width: 48px;
+            height: 48px;
+            background: rgba(197, 160, 89, 0.08);
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            transition: var(--transition);
+        }
+
+        .branch-card:hover .branch-icon-header {
+            background: var(--gold);
+            color: #ffffff;
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 5px 15px rgba(197, 160, 89, 0.4);
+        }
+
+        .branch-card h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--text);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .branch-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            line-height: 1.6;
+        }
+
+        .branch-card p i {
+            color: var(--gold);
+            margin-top: 5px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .branch-card:hover p i {
+            transform: scale(1.2);
+        }
+
+        .branch-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        /* BOTONES DE SUCURSALES CON EFECTO ELEVACIÓN */
+        .btn-branch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #f4f6f8;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .btn-whatsapp:hover {
+            background: #25d366;
+            border-color: #25d366;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.35);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .btn-map:hover, .btn-waze:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(197, 160, 89, 0.35);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .social-container {
+            margin-top: 70px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* ICONOS REDES SOCIALES CON EFECTO FLOTANTE Y GLOW */
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            background: #ffffff;
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            color: var(--text);
+            font-size: 1.3rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            position: relative;
+        }
+
+        .social-icons a:hover {
+            background: var(--gold);
+            color: #fff;
+            border-color: var(--gold);
+            transform: translateY(-6px) scale(1.1);
+            box-shadow: 0 12px 30px rgba(197, 160, 89, 0.5);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 40px 5%;
+            text-align: center;
+            background: #ffffff;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        footer p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        footer span { 
+            color: var(--gold); 
+            font-weight: 700; 
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* --- LOADER --- */
+        #loader {
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(255, 255, 255, 0.92); 
+            backdrop-filter: blur(12px);
+            z-index: 9999; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .spinner {
+            width: 55px; 
+            height: 55px;
+            border: 3px solid rgba(197, 160, 89, 0.15);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            box-shadow: 0 0 20px rgba(197,160,89,0.2);
+        }
+
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            nav { 
+                padding: 15px 6%; 
+            }
+            .menu-toggle { 
+                display: block; 
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%; 
+                left: 0; 
+                width: 100%;
+                background: rgba(255, 255, 255, 0.98);
+                padding: 40px 0;
+                align-items: center;
+                gap: 25px;
+                border-bottom: 2px solid var(--gold);
+                backdrop-filter: blur(20px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+            }
+            .nav-links.active { 
+                display: flex; 
+            }
+            .nav-links a { 
+                font-size: 0.9rem; 
+            }
+            
+            .banner-center-content h1 { 
+                font-size: 2.3rem; 
+            }
+            .hero-logo-central { 
+                max-width: 150px; 
+            }
+            .section-title h2 { 
+                font-size: 2rem; 
+            }
+            .branches-grid { 
+                grid-template-columns: 1fr; 
+                gap: 30px; 
+            }
+            .branch-card {
+                text-align: left;
+                padding: 0;
+            }
+            .branch-actions { 
+                justify-content: flex-start; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="color: var(--gold); margin-top: 20px; letter-spacing: 3px; font-size: 0.7rem; text-transform: uppercase; font-weight: 700;">Cargando Reservas...</p>
+    </div>
+
+    <!-- NAVEGACIÓN -->
+    <nav>
+        <a href="index.html">
+            <img src="logon.png" alt="El Gran Maco" class="logo-nav">
+        </a>
+        <div class="menu-toggle" id="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-links">
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#contacto">Sucursales</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="inicio">
+        <div class="banner-wrapper">
+            <div class="banner-top-title">
+                EL GRAN MACO <span>| BARBER SHOP</span>
+            </div>
+            
+            <div class="banner-center-content">
+                <img src="logon.png" alt="El Gran Maco Elite Style" class="hero-logo-central">
+                <h1>EXPERTOS EN CORTES MODERNOS</h1>
+                <p>Reserva tu cita y vive la experiencia de un estilo de élite</p>
+                <a href="#contacto" class="btn-gold">AGENDAR CITA</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE SERVICIOS -->
+    <section class="section" id="servicios" style="text-align: center; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; padding: 100px 10%; background: #ffffff;">
+        <div class="section-title" style="margin-bottom: 25px;">
+            <p style="color: var(--gold); font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 12px; font-weight: 700;">Experiencia Exclusiva</p>
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 2.6rem; color: var(--text); font-weight: 700; letter-spacing: 1px;">EL GRAN MACO</h2>
+        </div>
+        <div style="max-width: 900px; margin: 0 auto;">
+            <h4 style="color: var(--text); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; font-size: 1.35rem; font-weight: 700; font-family: 'Playfair Display', serif;">Estilo & Precisión</h4>
+            <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.9;">Un espacio diseñado para el hombre moderno que busca precisión y estilo. Ofrecemos servicios de corte clásico y de tendencia, perfilado de barba y cuidado capilar.</p>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE SUCURSALES Y CONTACTO -->
+    <section class="contact-section" id="contacto">
+        <div class="section-title">
+            <p>Nuestras Sucursales</p>
+            <h2>ENCUÉNTRANOS EN CHIMALTENANGO</h2>
+        </div>
+
+        <div class="branches-grid">
+        <!-- Sucursal 1 -->
+        <div class="branch-card">
+            <div class="branch-image-wrapper">
+                <img src="pradera.JPG" alt="CC Pradera Chimaltenango" class="branch-img">
+            </div>
+            <div class="branch-content">
+                <h3 style="text-align: center; text-transform: uppercase;">PRADERA CHIMALTENANGO</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Diagonal 1, 1-75 Zona 6, Centro Comercial Pradera Chimaltenango, Chimaltenango.</p>
+                <p><i class="fas fa-phone-alt"></i> Tel / WhatsApp: 5246 1337</p>
+                
+                <div style="margin-top: 15px; margin-bottom: 15px;">
+                    <a href="pradera.html" class="btn-branch" style="background: var(--gold); color: #fff; width: 100%; justify-content: center; padding: 12px; font-size: 0.75rem;">
+                        <i class="fas fa-calendar-check"></i> AGENDAR CITA
+                    </a>
+                </div>
+
+                <div class="branch-actions" style="justify-content: center;">
+                    <a href="https://api.whatsapp.com/send/?phone=50252461337&text&type=phone_number&app_absent=0" target="_blank" class="btn-branch btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="https://waze.com/ul/h9fx7mscuh" target="_blank" class="btn-branch btn-waze">
+                        <i class="fab fa-waze"></i> Waze
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sucursal 2 -->
+        <div class="branch-card">
+            <div class="branch-image-wrapper">
+                <img src="andaria.JPG" alt="Paseo Andaria" class="branch-img">
+            </div>
+            <div class="branch-content">
+                <h3 style="text-align: center; text-transform: uppercase;">PASEO ANDARIA</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Local 10 Paseo Andaria, KM 55.5 Carretera Interamericana Chimaltenango, Chimaltenango.</p>
+                <p><i class="fas fa-phone-alt"></i> Teléfono: 7765 3784</p>
+                
+                <div style="margin-top: 15px; margin-bottom: 15px;">
+                    <a href="andaria.html" class="btn-branch" style="background: var(--gold); color: #fff; width: 100%; justify-content: center; padding: 12px; font-size: 0.75rem;">
+                        <i class="fas fa-calendar-check"></i> AGENDAR CITA
+                    </a>
+                </div>
+
+                <div class="branch-actions" style="justify-content: center;">
+                    <a href="https://waze.com/ul/h9fx7mh7ng" target="_blank" class="btn-branch btn-waze">
+                        <i class="fab fa-waze"></i> Waze
+                    </a>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="social-container">
+            <p style="font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 15px; font-weight: 600;">Síguenos en redes</p>
+            <div class="social-icons">
+                <a href="https://www.tiktok.com/@elgranmaco_barbershop?_r=1&_t=ZS-9BIUxo97xkW" target="_blank"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 EL GRAN MACO | BY <span>ANTONY DE LEÓN</span></p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        function iniciarReserva(event) {
+            event.preventDefault();
+            const loader = document.getElementById('loader');
+            const url = event.currentTarget.getAttribute('href');
+            loader.style.display = 'flex';
+            setTimeout(() => {
+                window.location.href = url;
+            }, 800);
+        }
+
+        const menuBtn = document.getElementById('mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

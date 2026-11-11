@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Asistencia | El Gran Maco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --gold: #c5a059;
+            --gold-light: #dfc285;
+            --dark: #000000;
+            --card-bg: rgba(15, 17, 21, 0.85);
+            --text: #ffffff;
+            --text-muted: #94a3b8;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: radial-gradient(circle at 50% -20%, #16181d 0%, #050608 60%, #000000 100%); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            background: radial-gradient(rgba(197, 160, 89, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            z-index: -1;
+        }
+        
+        .portal-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(197, 160, 89, 0.25); 
+            border-radius: 24px; 
+            padding: 40px 35px; 
+            width: 100%; 
+            max-width: 440px; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(197,160,89,0.04);
+            position: relative;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo { height: 52px; margin-bottom: 25px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+
+        h2 { 
+            font-family: 'Playfair Display', serif; 
+            color: #fff; 
+            margin-bottom: 10px; 
+            font-size: 1.8rem; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 span { color: var(--gold); }
+
+        p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; line-height: 1.6; }
+
+        .form-group { margin-bottom: 22px; text-align: left; }
+        .form-group label { display: block; font-size: 0.7rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; color: var(--gold); letter-spacing: 2px; }
+        .form-group input { 
+            width: 100%; padding: 16px 20px; 
+            border: 1px solid rgba(197, 160, 89, 0.25); 
+            background: rgba(10, 11, 14, 0.9); 
+            color: #fff; border-radius: 14px; 
+            font-size: 0.95rem; outline: none; transition: var(--transition); 
+        }
+        .form-group input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(197,160,89,0.25); }
+
+        .btn-gold { 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 16px; 
+            background: linear-gradient(135deg, var(--gold), #96751c); 
+            color: #fff; font-weight: 700; border: none; cursor: pointer; 
+            border-radius: 14px; transition: var(--transition); text-transform: uppercase; 
+            letter-spacing: 2px; font-size: 0.75rem;
+            box-shadow: 0 10px 25px rgba(197, 160, 89, 0.25);
+        }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(197, 160, 89, 0.4); }
+
+        .vista { display: none; }
+        .vista.active { display: block; animation: fadeIn 0.6s ease; }
+        
+        .qr-box-container { 
+            background: #ffffff; padding: 22px; border-radius: 20px; 
+            display: inline-block; margin-bottom: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px rgba(197,160,89,0.15);
+            border: 2px solid var(--gold);
+        }
+        
+        .badge-sucursal { 
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(197,160,89,0.1); color: var(--gold); 
+            padding: 8px 18px; border-radius: 30px; font-size: 0.75rem; 
+            font-weight: 700; text-transform: uppercase; margin-bottom: 20px; 
+            border: 1px solid rgba(197,160,89,0.3); letter-spacing: 1px;
+        }
+
+        .timer-text { font-size: 0.75rem; color: var(--gold); margin-bottom: 15px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+        .btn-regresar { display: inline-flex; align-items: center; gap: 8px; margin-top: 25px; color: var(--text-muted); text-decoration: none; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; }
+        .btn-regresar:hover { color: var(--gold); }
+
+        #toast { 
+            position: fixed; bottom: 30px; right: 30px; background: rgba(15, 17, 21, 0.95); 
+            backdrop-filter: blur(15px); color: #fff; padding: 18px 28px; border-radius: 16px; 
+            border-left: 4px solid var(--gold); box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+            display: flex; align-items: center; gap: 15px; z-index: 2000; transform: translateY(120px); 
+            opacity: 0; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.9rem; 
+            border: 1px solid rgba(197,160,89,0.2); 
+        }
+        #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="portal-card">
+        <img src="logo.png" alt="El Gran Maco" class="logo">
+
+        <!-- VISTA 1: LOGIN -->
+        <div id="vista-login" class="vista active">
+            <h2>Portal de <span>Asistencia</span></h2>
+            <p>Ingresa tu correo electrónico corporativo para ver tu código QR dinámico.</p>
+            
+            <form onsubmit="iniciarSesionBarbero(event)">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="inputCorreoLogin" required placeholder="barbero@elgranmaco.com">
+                </div>
+                <button type="submit" class="btn-gold"><i class="fas fa-fingerprint"></i> Acceder a mi Panel</button>
+            </form>
+            <a href="index.html" class="btn-regresar"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+        </div>
+
+        <!-- VISTA 2: PANEL PRIVADO CON QR DINÁMICO (SIN CÁMARA) -->
+        <div id="vista-panel" class="vista">
+            <h2 id="lblNombreBarbero" style="font-size: 1.5rem; margin-bottom: 5px;">Colaborador</h2>
+            <div class="badge-sucursal" id="lblSucursalBarbero"><i class="fas fa-store"></i> Sucursal</div>
+            
+            <div>
+                <p style="margin-bottom: 10px; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);">Muestra este código en la entrada</p>
+                <div class="qr-box-container">
+                    <div id="miQrPersonal"></div>
+                </div>
+                <div class="timer-text" id="lblTimer">Renovando código en 30s...</div>
+            </div>
+
+            <button class="btn-gold" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); margin-top: 15px; box-shadow: none;" onclick="cerrarSesion()">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </div>
+    </div>
+
+    <div id="toast">
+        <i id="toastIcon" class="fas fa-check-circle" style="color: var(--gold); font-size: 1.3rem;"></i>
+        <span id="toastMsg">Notificación</span>
+    </div>
+
+    <script>
+        let intervaloQR = null;
+
+        function mostrarToast(mensaje, tipo = 'exito') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+            toastMsg.innerText = mensaje;
+            toastIcon.className = tipo === 'error' ? "fas fa-exclamation-triangle" : "fas fa-check-circle";
+            toastIcon.style.color = tipo === 'error' ? "#ef4444" : "var(--gold)";
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        function iniciarSesionBarbero(e) {
+            e.preventDefault();
+            const correoIngresado = document.getElementById('inputCorreoLogin').value.trim().toLowerCase();
+            const personal = JSON.parse(localStorage.getItem('egm_personal')) || [];
+            const barbero = personal.find(p => p.correo === correoIngresado);
+
+            if (!barbero) {
+                mostrarToast('El correo no se encuentra registrado en el sistema.', 'error');
+                return;
+            }
+
+            localStorage.setItem('egm_sesion_activa', JSON.stringify(barbero));
+            cargarPanelBarbero(barbero);
+            mostrarToast(`¡Bienvenido, ${barbero.nombre}!`);
+        }
+
+        function cargarPanelBarbero(barbero) {
+            document.getElementById('vista-login').classList.remove('active');
+            document.getElementById('vista-panel').classList.add('active');
+
+            document.getElementById('lblNombreBarbero').innerText = barbero.nombre;
+            document.getElementById('lblSucursalBarbero').innerHTML = `<i class="fas fa-store"></i> Sucursal: ${barbero.sucursal || 'General'}`;
+
+            // Iniciar la generación y rotación automática del QR Dinámico cada 25 segundos
+            generarQRDinamico(barbero);
+            if (intervaloQR) clearInterval(intervaloQR);
+            intervaloQR = setInterval(() => generarQRDinamico(barbero), 25000);
+        }
+
+        function generarQRDinamico(barbero) {
+            const bloqueTiempo = Math.floor(Date.now() / 30000); 
+            const tokenDinamico = `EGM_${barbero.correo}_${bloqueTiempo}`;
+
+            document.getElementById('miQrPersonal').innerHTML = "";
+            new QRCode(document.getElementById("miQrPersonal"), {
+                text: tokenDinamico,
+                width: 170,
+                height: 170,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            let segundosRestantes = 30 - Math.floor((Date.now() / 1000) % 30);
+            document.getElementById('lblTimer').innerText = `Renovando código en ${segundosRestantes}s`;
+        }
+
+        setInterval(() => {
+            if(document.getElementById('vista-panel').classList.contains('active')) {
+                let segundosRestantes = 30 - Math.floor((Date.now() / 1000) % 30);
+                document.getElementById('lblTimer').innerText = `Renovando código en ${segundosRestantes}s`;
+            }
+        }, 1000);
+
+        function cerrarSesion() {
+            if (intervaloQR) clearInterval(intervaloQR);
+            localStorage.removeItem('egm_sesion_activa');
+            document.getElementById('vista-panel').classList.remove('active');
+            document.getElementById('vista-login').classList.add('active');
+            document.getElementById('inputCorreoLogin').value = '';
+            mostrarToast('Sesión cerrada correctamente.');
+        }
+
+        window.onload = () => {
+            const sesionGuardada = JSON.parse(localStorage.getItem('egm_sesion_activa'));
+            if (sesionGuardada) {
+                cargarPanelBarbero(sesionGuardada);
+            }
+        };
+    </script>
+</body>
+</html>
