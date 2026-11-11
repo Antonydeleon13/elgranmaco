@@ -54,9 +54,9 @@
             position: relative;
         }
 
-        /* Corrección estricta para el logo en móviles para que no se deforme */
+        /* Corrección aplicada: Se mantiene controlado y derecho en móviles */
         .logo { 
-            max-height: 48px; 
+            max-height: 52px; 
             width: auto; 
             height: auto; 
             margin-bottom: 20px; 
@@ -135,7 +135,6 @@
 <body>
 
     <div class="portal-card">
-        <!-- Asegúrate de que tu archivo de imagen en GitHub se llame logo.png exactamente en minúsculas -->
         <img src="logo.png" alt="El Gran Maco" class="logo">
 
         <!-- VISTA 1: LOGIN -->
@@ -177,10 +176,28 @@
         <span id="toastMsg">Notificación</span>
     </div>
 
-    <script>
+    <!-- Firebase SDKs y Lógica Sincronizada -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Tus credenciales oficiales de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBRhYDMfZYqFTa0I-oIvf7ObSObKOgEJlo",
+            authDomain: "elgranmaco-46fa2.firebaseapp.com",
+            databaseURL: "https://elgranmaco-46fa2-default-rtdb.firebaseio.com",
+            projectId: "elgranmaco-46fa2",
+            storageBucket: "elgranmaco-46fa2.firebasestorage.app",
+            messagingSenderId: "409031916784",
+            appId: "1:409031916784:web:60f51c79ec56f01098d635"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         let intervaloQR = null;
 
-        function mostrarToast(mensaje, tipo = 'exito') {
+        window.mostrarToast = function(mensaje, tipo = 'exito') {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
             const toastIcon = document.getElementById('toastIcon');
@@ -191,20 +208,32 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3500);
         }
 
-        function iniciarSesionBarbero(e) {
+        window.iniciarSesionBarbero = async function(e) {
             e.preventDefault();
             const correoIngresado = document.getElementById('inputCorreoLogin').value.trim().toLowerCase();
-            const personal = JSON.parse(localStorage.getItem('egm_personal')) || [];
-            const barbero = personal.find(p => p.correo === correoIngresado);
 
-            if (!barbero) {
-                mostrarToast('El correo no está registrado. Da de alta al colaborador en el panel admin.', 'error');
-                return;
+            try {
+                // Consulta directa a la colección 'personal' en Firestore
+                const q = query(collection(db, "personal"), where("correo", "==", correoIngresado));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    mostrarToast('El correo no se encuentra registrado en el sistema.', 'error');
+                    return;
+                }
+
+                let barbero = null;
+                querySnapshot.forEach((doc) => {
+                    barbero = doc.data();
+                });
+
+                localStorage.setItem('egm_sesion_activa', JSON.stringify(barbero));
+                cargarPanelBarbero(barbero);
+                mostrarToast(`¡Bienvenido, ${barbero.nombre}!`);
+            } catch (error) {
+                console.error("Error al conectar con Firebase:", error);
+                mostrarToast('Error de conexión con la base de datos.', 'error');
             }
-
-            localStorage.setItem('egm_sesion_activa', JSON.stringify(barbero));
-            cargarPanelBarbero(barbero);
-            mostrarToast(`¡Bienvenido, ${barbero.nombre}!`);
         }
 
         function cargarPanelBarbero(barbero) {
@@ -244,7 +273,7 @@
             }
         }, 1000);
 
-        function cerrarSesion() {
+        window.cerrarSesion = function() {
             if (intervaloQR) clearInterval(intervaloQR);
             localStorage.removeItem('egm_sesion_activa');
             document.getElementById('vista-panel').classList.remove('active');
