@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia & Escáner | El Gran Maco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root {
+            --gold: #c5a059;
+            --dark: #0f1115;
+            --card-bg: #ffffff;
+            --text: #1a1d24;
+            --text-muted: #64748b;
+            --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #fafbfc; color: var(--text); padding: 30px 5%; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid rgba(197, 160, 89, 0.2); padding-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        
+        .logo-admin { height: 42px; width: auto; object-fit: contain; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--text); }
+        
+        /* Pestañas */
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border: none; background: #e2e8f0; color: var(--text); font-weight: 700; border-radius: 8px; cursor: pointer; transition: var(--transition); }
+        .tab-btn.active { background: var(--gold); color: #fff; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card-box { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(197, 160, 89, 0.15); margin-bottom: 30px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; color: var(--gold); }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; outline: none; background: #fff; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+
+        .btn-gold { background: linear-gradient(135deg, var(--gold), #96751c); color: #fff; font-weight: 700; border: none; cursor: pointer; padding: 12px 20px; border-radius: 8px; transition: var(--transition); text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; }
+        .btn-gold:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .table-container { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid rgba(197, 160, 89, 0.15); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 15px 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        th { background: #f8fafc; color: var(--gold); font-weight: 700; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+        tr:hover { background: #fdfaf5; }
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-entrada { background: #dcfce7; color: #166534; }
+        .badge-salida { background: #fee2e2; color: #991b1b; }
+
+        .btn-delete { background: #fee2e2; color: #991b1b; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: var(--transition); font-size: 0.85rem; }
+        .btn-delete:hover { background: #fecaca; transform: scale(1.05); }
+
+        .scanner-container { max-width: 500px; margin: 0 auto; background: #0f1115; padding: 30px; border-radius: 16px; border: 1px solid rgba(197, 160, 89, 0.3); text-align: center; color: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid var(--gold); margin-bottom: 20px; background: #000; }
+        #resultado-escaner { padding: 15px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; display: none; margin-top: 15px; }
+        .exito { background: #064e3b; color: #a7f3d0; border: 1px solid #10b981; }
+        .error-esc { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-card { background: #fff; padding: 30px; border-radius: 16px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+
+        #toast { position: fixed; bottom: 30px; right: 30px; background: #181b22; color: #fff; padding: 15px 25px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; z-index: 2000; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.9rem; }
+        #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="El Gran Maco" class="logo-admin">
+            <h1>Control de Asistencia & Escáner</h1>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; min-width: 240px;">
+            <label style="color: var(--gold); font-size: 0.7rem; margin-bottom: 3px;">Sucursal de esta Estación:</label>
+            <select id="sucursalEstacion" style="padding: 8px; font-weight: 700; color: var(--gold);">
+                <option value="Pradera Chimaltenango">Pradera Chimaltenango</option>
+                <option value="Paseo Andaria">Paseo Andaria</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="cambiarTab('asistencias', event)">Registro de Asistencias</button>
+        <button class="tab-btn" onclick="cambiarTab('escaner', event)"><i class="fas fa-camera"></i> Escáner de Entrada / Salida</button>
+    </div>
+
+    <!-- TAB 1: ASISTENCIAS -->
+    <div id="tab-asistencias" class="tab-content active">
+        <div class="card-box" style="padding: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+            <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label>Sucursal</label>
+                <select id="filtroSucursal" onchange="filtrarYMostrarRegistros()">
+                    <option value="todos">Todas las Sucursales</option>
+                    <option value="Pradera Chimaltenango">Pradera Chimaltenango</option>
+                    <option value="Paseo Andaria">Paseo Andaria</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label>Fecha</label>
+                <input type="date" id="filtroFecha" onchange="filtrarYMostrarRegistros()">
+            </div>
+            <div>
+                <button class="btn-gold" onclick="limpiarFiltros()"><i class="fas fa-redo"></i> Restablecer</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Colaborador</th>
+                        <th>Correo</th>
+                        <th>Sucursal del Fichaje</th>
+                        <th>Tipo</th>
+                        <th>Fecha y Hora</th>
+                        <th style="text-align: center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaAsistencia"></tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn-gold" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar CSV</button>
+        </div>
+    </div>
+
+    <!-- TAB 2: ESCÁNER -->
+    <div id="tab-escaner" class="tab-content">
+        <div class="scanner-container">
+            <h3 style="font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 5px;">Escáner de Asistencia QR</h3>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px;">Apunta la cámara al teléfono del colaborador.</p>
+            <div id="reader"></div>
+            <div id="resultado-escaner"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div id="modalConfirmacion" class="modal-overlay">
+        <div class="modal-card">
+            <i class="fas fa-exclamation-circle" style="font-size: 2.5rem; color: var(--gold); margin-bottom: 15px;"></i>
+            <h3 id="confirmTitulo" style="font-family: 'Playfair Display', serif; margin-bottom: 10px; color: var(--text);">¿Estás seguro?</h3>
+            <p id="confirmTexto" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-gold" style="background: #cbd5e1; color: var(--text);" onclick="cerrarModalConfirm()">Cancelar</button>
+                <button id="btnConfirmAccion" class="btn-gold" style="background: #991b1b;">Sí, continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast">
+        <i id="toastIcon" class="fas fa-check-circle" style="color: var(--gold); font-size: 1.2rem;"></i>
+        <span id="toastMsg">Mensaje</span>
+    </div>
+
+    <!-- Lógica de Firebase (Módulo) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBRhYDMfZYqFTa0I-oIvf7ObSObKOgEJlo",
+            authDomain: "elgranmaco-46fa2.firebaseapp.com",
+            databaseURL: "https://elgranmaco-46fa2-default-rtdb.firebaseio.com",
+            projectId: "elgranmaco-46fa2",
+            storageBucket: "elgranmaco-46fa2.firebasestorage.app",
+            messagingSenderId: "409031916784",
+            appId: "1:409031916784:web:60f51c79ec56f01098d635"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        let html5QrCode = null;
+        let globalRegistros = [];
+
+        window.mostrarToast = function(mensaje, tipo = 'exito') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+            toastMsg.innerText = mensaje;
+            toastIcon.className = tipo === 'error' ? "fas fa-exclamation-triangle" : "fas fa-check-circle";
+            toastIcon.style.color = tipo === 'error' ? "#ef4444" : "var(--gold)";
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        window.abrirModalConfirm = function(titulo, texto, callbackAccion) {
+            document.getElementById('confirmTitulo').innerText = titulo;
+            document.getElementById('confirmTexto').innerText = texto;
+            const btnAccion = document.getElementById('btnConfirmAccion');
+            const nuevoBtn = btnAccion.cloneNode(true);
+            btnAccion.parentNode.replaceChild(nuevoBtn, btnAccion);
+            document.getElementById('btnConfirmAccion').addEventListener('click', () => {
+                cerrarModalConfirm();
+                callbackAccion();
+            });
+            document.getElementById('modalConfirmacion').style.display = 'flex';
+        }
+
+        window.cerrarModalConfirm = function() {
+            document.getElementById('modalConfirmacion').style.display = 'none';
+        }
+
+        window.cambiarTab = function(tabId, evt) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            if(evt) evt.currentTarget.classList.add('active');
+
+            if (tabId === 'escaner') {
+                iniciarEscannerCamara();
+            } else {
+                detenerEscannerCamara();
+            }
+        }
+
+        // --- ESCÁNER Y ASISTENCIAS ---
+        function iniciarEscannerCamara() {
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: { width: 220, height: 220 } },
+                onScanSuccess,
+                (errorMessage) => {}
+            ).catch(err => console.error("Error cámara:", err));
+        }
+
+        function detenerEscannerCamara() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.error("Error deteniendo cámara:", err));
+            }
+        }
+
+        async function onScanSuccess(decodedText) {
+            const resDiv = document.getElementById('resultado-escaner');
+            const sucursalActual = document.getElementById('sucursalEstacion').value;
+
+            if (!decodedText.startsWith("EGM_")) {
+                resDiv.className = "error-esc";
+                resDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> QR No válido.`;
+                resDiv.style.display = 'block';
+                setTimeout(() => { resDiv.style.display = 'none'; }, 4000);
+                return;
+            }
+
+            const partes = decodedText.split("_");
+            const correoQr = partes[1];
+            const timestampQr = parseInt(partes[2]);
+            const bloqueActual = Math.floor(Date.now() / 30000);
+
+            if (Math.abs(bloqueActual - timestampQr) > 1) {
+                resDiv.className = "error-esc";
+                resDiv.innerHTML = `<i class="fas fa-clock"></i> ¡QR EXPIRADO!<br><span style="font-size:0.75rem;">El código ha caducado. Debe generarse en vivo.</span>`;
+                resDiv.style.display = 'block';
+                setTimeout(() => { resDiv.style.display = 'none'; }, 4500);
+                return;
+            }
+
+            try {
+                const q = query(collection(db, "personal"), where("correo", "==", correoQr));
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    resDiv.className = "error-esc";
+                    resDiv.innerHTML = `<i class="fas fa-user-slash"></i> Colaborador no encontrado en el sistema.`;
+                    resDiv.style.display = 'block';
+                    setTimeout(() => { resDiv.style.display = 'none'; }, 4000);
+                    return;
+                }
+
+                let barbero = null;
+                querySnapshot.forEach(d => barbero = d.data());
+
+                registrarAsistenciaFirebase(barbero, sucursalActual);
+            } catch (error) {
+                console.error("Error verificando QR:", error);
+            }
+        }
+
+        let procesandoEscaneo = false;
+
+        async function registrarAsistenciaFirebase(barbero, sucursal) {
+            if (procesandoEscaneo) return;
+            procesandoEscaneo = true;
+
+            const ahora = new Date();
+            const horaActual = ahora.getHours();
+            const resDiv = document.getElementById('resultado-escaner');
+            const hoyStr = ahora.toISOString().slice(0, 10);
+
+            if (horaActual < 5) {
+                resDiv.className = "error-esc";
+                resDiv.innerHTML = `<i class="fas fa-clock"></i> Demasiado temprano (Habilitado desde las 5:00 AM)`;
+                resDiv.style.display = 'block';
+                setTimeout(() => { resDiv.style.display = 'none'; procesandoEscaneo = false; }, 4000);
+                return;
+            }
+
+            try {
+                const q = query(collection(db, "asistencias"), where("correo", "==", barbero.correo));
+                const snapshot = await getDocs(q);
+                let misRegistrosHoy = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if(data.timestamp && data.timestamp.startsWith(hoyStr)) {
+                        misRegistrosHoy.push(data);
+                    }
+                });
+
+                misRegistrosHoy.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                // REGLA DE LOS 30 MINUTOS
+                if (misRegistrosHoy.length > 0) {
+                    const ultimoRegistro = misRegistrosHoy[0];
+                    const tiempoTranscurridoMinutos = (ahora - new Date(ultimoRegistro.timestamp)) / 60000;
+
+                    if (tiempoTranscurridoMinutos < 30) {
+                        const minutosRestantes = Math.ceil(30 - tiempoTranscurridoMinutos);
+                        resDiv.className = "error-esc";
+                        resDiv.innerHTML = `<i class="fas fa-ban"></i> ¡YA TIENES UN REGISTRO RECIENTE!<br><span style="font-size:0.75rem;">Debes esperar ${minutosRestantes} minutos más para marcar nuevamente. (${ultimoRegistro.tipo})</span>`;
+                        resDiv.style.display = 'block';
+                        setTimeout(() => { 
+                            resDiv.style.display = 'none'; 
+                            procesandoEscaneo = false; 
+                        }, 4000);
+                        return;
+                    }
+                }
+
+                let tipo = "ENTRADA";
+                if (misRegistrosHoy.length > 0) {
+                    if (misRegistrosHoy[0].tipo === "ENTRADA") {
+                        tipo = "SALIDA";
+                    }
+                }
+
+                if (tipo === "SALIDA" && horaActual < 11) {
+                    resDiv.className = "error-esc";
+                    resDiv.innerHTML = `<i class="fas fa-clock"></i> Aún no es hora de salida (Habilitado desde las 11:00 AM)`;
+                    resDiv.style.display = 'block';
+                    setTimeout(() => { resDiv.style.display = 'none'; procesandoEscaneo = false; }, 4000);
+                    return;
+                }
+
+                const nuevoRegistro = {
+                    nombre: barbero.nombre,
+                    correo: barbero.correo,
+                    sucursal: sucursal,
+                    tipo: tipo,
+                    fechaHora: ahora.toLocaleString('es-GT'),
+                    timestamp: ahora.toISOString()
+                };
+
+                await addDoc(collection(db, "asistencias"), nuevoRegistro);
+
+                resDiv.className = "exito";
+                resDiv.innerHTML = `<i class="fas fa-check-circle"></i> ¡${tipo} REGISTRADA!<br><span style="font-size:0.8rem;">${barbero.nombre} (${sucursal})</span>`;
+                resDiv.style.display = 'block';
+                mostrarToast(`¡${tipo} marcada con éxito para ${barbero.nombre}!`);
+                cargarRegistros();
+
+                setTimeout(() => {
+                    resDiv.style.display = 'none';
+                    procesandoEscaneo = false;
+                }, 5000);
+
+            } catch (error) {
+                console.error("Error registrando asistencia:", error);
+                procesandoEscaneo = false;
+            }
+        }
+
+        window.cargarRegistros = async function() {
+            const tbody = document.getElementById('tablaAsistencia');
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Cargando registros...</td></tr>`;
+            try {
+                const querySnapshot = await getDocs(collection(db, "asistencias"));
+                globalRegistros = [];
+                querySnapshot.forEach(doc => {
+                    globalRegistros.push({ id: doc.id, ...doc.data() });
+                });
+
+                filtrarYMostrarRegistros();
+            } catch (error) {
+                console.error("Error cargando asistencias:", error);
+            }
+        }
+
+        window.filtrarYMostrarRegistros = function() {
+            const sucursalFiltro = document.getElementById('filtroSucursal').value;
+            const fechaFiltro = document.getElementById('filtroFecha').value;
+            let filtrados = [...globalRegistros];
+
+            if (sucursalFiltro !== 'todos') {
+                filtrados = filtrados.filter(r => r.sucursal === sucursalFiltro);
+            }
+            if (fechaFiltro) {
+                filtrados = filtrados.filter(r => r.timestamp && r.timestamp.startsWith(fechaFiltro));
+            }
+
+            filtrados.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const tbody = document.getElementById('tablaAsistencia');
+            tbody.innerHTML = '';
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">No hay registros de asistencia.</td></tr>`;
+                return;
+            }
+
+            filtrados.forEach(reg => {
+                const tr = document.createElement('tr');
+                const badgeClass = reg.tipo === 'ENTRADA' ? 'badge-entrada' : 'badge-salida';
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${reg.nombre}</td>
+                    <td style="color: var(--text-muted);">${reg.correo}</td>
+                    <td>${reg.sucursal}</td>
+                    <td><span class="badge ${badgeClass}">${reg.tipo}</span></td>
+                    <td>${reg.fechaHora}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-delete" onclick="confirmarEliminarRegistro('${reg.id}')" title="Eliminar registro específico"><i class="fas fa-times"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.confirmarEliminarRegistro = function(idRegistro) {
+            abrirModalConfirm(
+                "Eliminar Registro",
+                "¿Estás seguro de eliminar este registro específico de la base de datos?",
+                async () => {
+                    try {
+                        await deleteDoc(doc(db, "asistencias", idRegistro));
+                        mostrarToast("Registro eliminado correctamente.");
+                        cargarRegistros();
+                    } catch (error) {
+                        console.error("Error al eliminar:", error);
+                        mostrarToast("No se pudo eliminar el registro.", "error");
+                    }
+                }
+            );
+        }
+
+        window.limpiarFiltros = function() {
+            document.getElementById('filtroSucursal').value = 'todos';
+            document.getElementById('filtroFecha').value = '';
+            filtrarYMostrarRegistros();
+        }
+
+        window.exportarExcel = function() {
+            if (globalRegistros.length === 0) { mostrarToast('No hay datos para exportar.', 'error'); return; }
+            let csv = 'Colaborador,Correo,Sucursal,Tipo,Fecha y Hora\n';
+            globalRegistros.forEach(r => { csv += `"${r.nombre}","${r.correo}","${r.sucursal}","${r.tipo}","${r.fechaHora}"\n`; });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Asistencia_ElGranMaco_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            mostrarToast('Archivo exportado con éxito.');
+        }
+
+        window.onload = () => {
+            cargarRegistros();
+        };
+    </script>
+</body>
+</html>
