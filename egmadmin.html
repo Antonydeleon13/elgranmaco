@@ -351,7 +351,12 @@
             }
         }
 
+        let procesandoEscaneo = false; // Candado para evitar dobles lecturas instantáneas
+
         async function registrarAsistenciaFirebase(barbero, sucursal) {
+            if (procesandoEscaneo) return; // Si ya está procesando un escaneo, se detiene
+            procesandoEscaneo = true;
+
             const ahora = new Date();
             const horaActual = ahora.getHours();
             const resDiv = document.getElementById('resultado-escaner');
@@ -361,31 +366,60 @@
                 resDiv.className = "error-esc";
                 resDiv.innerHTML = `<i class="fas fa-clock"></i> Demasiado temprano (Habilitado desde las 5:00 AM)`;
                 resDiv.style.display = 'block';
-                setTimeout(() => { resDiv.style.display = 'none'; }, 4000);
+                setTimeout(() => { resDiv.style.display = 'none'; procesandoEscaneo = false; }, 4000);
                 return;
             }
 
             try {
+                // Consultar asistencias del día en Firebase para este colaborador
                 const q = query(collection(db, "asistencias"), where("correo", "==", barbero.correo));
                 const snapshot = await getDocs(q);
                 let misRegistrosHoy = [];
+                
                 snapshot.forEach(doc => {
-                    if(doc.data().timestamp.startsWith(hoyStr)) {
-                        misRegistrosHoy.push(doc.data());
+                    const data = doc.data();
+                    if(data.timestamp && data.timestamp.startsWith(hoyStr)) {
+                        misRegistrosHoy.push(data);
                     }
                 });
 
+                // ORDENAR POR HORA MÁS RECIENTE
+                misRegistrosHoy.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                // REGLA DE LOS 30 MINUTOS (Antifraude de doble marcación)
+                if (misRegistrosHoy.length > 0) {
+                    const ultimoRegistro = misRegistrosHoy[0];
+                    const tiempoTranscurridoMinutos = (ahora - new Date(ultimoRegistro.timestamp)) / 60000;
+
+                    if (tiempoTranscurridoMinutos < 30) {
+                        const minutosRestantes = Math.ceil(30 - tiempoTranscurridoMinutos);
+                        resDiv.className = "error-esc";
+                        resDiv.innerHTML = `<i class="fas fa-ban"></i> ¡YA TIENES UN REGISTRO RECIENTE!<br><span style="font-size:0.75rem;">Debes esperar ${minutosRestantes} minutos más para marcar nuevamente. (${ultimoRegistro.tipo})</span>`;
+                        resDiv.style.display = 'block';
+                        
+                        // Ocultar mensaje y liberar el candado tras 4 segundos
+                        setTimeout(() => { 
+                            resDiv.style.display = 'none'; 
+                            procesandoEscaneo = false; 
+                        }, 4000);
+                        return;
+                    }
+                }
+
+                // Determinar si corresponde ENTRADA o SALIDA
                 let tipo = "ENTRADA";
                 if (misRegistrosHoy.length > 0) {
-                    const ultimo = misRegistrosHoy[misRegistrosHoy.length - 1];
-                    if (ultimo.tipo === "ENTRADA") tipo = "SALIDA";
+                    // Si el último registro del día fue ENTRADA, ahora toca SALIDA (y viceversa)
+                    if (misRegistrosHoy[0].tipo === "ENTRADA") {
+                        tipo = "SALIDA";
+                    }
                 }
 
                 if (tipo === "SALIDA" && horaActual < 11) {
                     resDiv.className = "error-esc";
                     resDiv.innerHTML = `<i class="fas fa-clock"></i> Aún no es hora de salida (Habilitado desde las 11:00 AM)`;
                     resDiv.style.display = 'block';
-                    setTimeout(() => { resDiv.style.display = 'none'; }, 4000);
+                    setTimeout(() => { resDiv.style.display = 'none'; procesandoEscaneo = false; }, 4000);
                     return;
                 }
 
@@ -406,9 +440,15 @@
                 mostrarToast(`¡${tipo} marcada con éxito para ${barbero.nombre}!`);
                 cargarRegistros();
 
-                setTimeout(() => { resDiv.style.display = 'none'; }, 5000);
+                // Pausa de 5 segundos antes de permitir un nuevo escaneo en la cámara
+                setTimeout(() => {
+                    resDiv.style.display = 'none';
+                    procesandoEscaneo = false;
+                }, 5000);
+
             } catch (error) {
                 console.error("Error registrando asistencia:", error);
+                procesandoEscaneo = false;
             }
         }
 
